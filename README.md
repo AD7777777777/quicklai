@@ -134,3 +134,61 @@ The site is built in English first. When ready, UI text is translated to Hebrew
 in one pass — the strings live in `lib/config.js`, the page files, and
 `lib/posts.js`. Set `<html lang="he" dir="rtl">` in `app/layout.jsx` at that
 stage.
+
+---
+
+## Update — lead capture, privacy, and blog changes
+
+**Chat flow (new):** The advisor now asks 5–7+ leading questions to understand
+the business, gives one basic-but-useful piece of advice, then invites the user
+to a free 30-minute call by collecting their **name + phone** in-chat. It does
+not book the call — it captures a lead. The `[LEAD_CAPTURE]` marker in the AI
+reply triggers the in-chat form.
+
+**Leads storage:** Submitted leads are saved to `data/leads.json` on the server
+by `app/api/lead/route.js`, together with a summary of the conversation (so each
+lead connects the person's details with their business context). `data/` is
+gitignored because it holds personal information.
+
+> **Important — Vercel note:** Vercel's serverless filesystem is ephemeral, so
+> `data/leads.json` will NOT persist reliably in production there. For a live
+> deployment, swap the storage block in `app/api/lead/route.js` for a database
+> or service (Supabase, Airtable, Google Sheets, a CRM, etc.). The JSON file is
+> ideal for local development and self-hosted servers.
+
+**Privacy policy:** `app/privacy/page.jsx` is a plain-language policy covering
+data collection, usage, retention, and user rights. The lead form requires
+agreement to it before submitting.
+
+> **Legal review required:** The policy includes an *optional, separate* opt-in
+> for sharing data with partners. Sharing or selling personal data is heavily
+> regulated under Israel's Privacy Protection Law and the GDPR, and needs
+> explicit, unbundled consent. Have a lawyer review the policy — and especially
+> that clause — before you rely on it or switch on any data-sharing.
+
+**Blog:** Now 36 posts (2 per month, Jan 2025 → June 2026), shown newest-first
+in a scroll box (~7 visible at once). Post cards are not clickable by design;
+hidden crawlable links keep every post discoverable for AEO and search.
+
+---
+
+## Update — Google Sheets leads + marketing-page lead capture
+
+**Leads now go to Google Sheets.** The lead API (`app/api/lead/route.js`)
+forwards each lead to a Google Apps Script web app, which appends a row to your
+Sheet. This works on Vercel (no ephemeral-file problem) and needs no API keys.
+
+**Setup:** follow `GOOGLE_SHEETS_SETUP.md` — create a Sheet, paste in
+`google-apps-script.gs`, deploy it as a web app, and put the resulting URL in
+`GOOGLE_SHEETS_WEBHOOK_URL` (in `.env.local` locally and in Vercel's env vars for
+production).
+
+**Marketing pages now capture leads too.** The old "Book your free call" links
+to Calendly on the Services, Blog post, and Contact pages are replaced with a
+button that opens a **popup form** (name + phone + privacy consent) — the same
+capture flow as the chat. Every lead records its `source` (which page or the
+chat) in the Sheet.
+
+**One shared form.** Both the chat and the popups use a single
+`components/LeadForm.jsx`, so consent handling and capture logic live in exactly
+one place. The popup wrapper is `components/BookCallButton.jsx`.

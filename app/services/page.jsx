@@ -1,7 +1,7 @@
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import FAQ from "@/components/FAQ";
-import { SITE } from "@/lib/config";
+import BookCallButton from "@/components/BookCallButton";
 
 export const metadata = {
   title: "Services",
@@ -68,14 +68,7 @@ export default function Services() {
       </section>
 
       <div className="text-center py-8">
-        <a
-          href={SITE.bookingUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block bg-brand-blue hover:bg-brand-bluehover text-white rounded-full px-7 py-3 text-[16px] font-medium transition-colors"
-        >
-          Book your free call →
-        </a>
+        <BookCallButton source="services page" />
       </div>
 
       <FAQ items={serviceFaqs} />

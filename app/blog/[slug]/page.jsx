@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import BookCallButton from "@/components/BookCallButton";
 import { POST_CONTENT } from "@/lib/posts";
 import { SITE } from "@/lib/config";
 
@@ -124,14 +125,7 @@ export default function BlogPost({ params }) {
             A free 30-minute business mapping call turns this advice into a plan
             built for your business.
           </p>
-          <a
-            href={SITE.bookingUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-brand-blue hover:bg-brand-bluehover text-white rounded-full px-7 py-3 text-[16px] font-medium transition-colors"
-          >
-            Book your free call →
-          </a>
+          <BookCallButton source={`blog: ${post.title}`} />
         </div>
       </article>
 

@@ -22,29 +22,45 @@ export default function Blog() {
         </p>
       </section>
 
-      <section className="max-w-[680px] mx-auto px-5 pb-16 flex flex-col divide-y divide-gray-100">
+      {/*
+        Scroll box: shows ~7 posts at once, the rest reachable by scrolling.
+        All 36 posts render in the DOM, so crawlers and AI engines still see
+        every post — the scroll only affects what's visible, not what's indexed.
+      */}
+      <section className="max-w-[680px] mx-auto px-5 pb-16">
+        <div className="h-[640px] overflow-y-auto rounded-2xl border border-gray-100 divide-y divide-gray-100 px-5">
+          {BLOG_POSTS.map((post) => (
+            <article key={post.slug} className="py-6">
+              <p className="text-[12px] text-gray-400 mb-1">
+                {new Date(post.date).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </p>
+              <h2 className="text-[22px] font-medium text-gray-900 mb-1.5">
+                {post.title}
+              </h2>
+              <p className="text-[15px] text-gray-500 leading-relaxed">
+                {post.excerpt}
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/*
+        AEO: hidden crawlable links to every post. Posts aren't clickable in the
+        visible UI (per design), but AI answer engines and search crawlers still
+        need a path to each post page — these keep them discoverable and indexed.
+      */}
+      <nav aria-hidden="true" className="sr-only">
         {BLOG_POSTS.map((post) => (
-          <Link
-            key={post.slug}
-            href={`/blog/${post.slug}`}
-            className="py-6 group"
-          >
-            <p className="text-[12px] text-gray-400 mb-1">
-              {new Date(post.date).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
-            <h2 className="text-[22px] font-medium text-gray-900 group-hover:text-brand-blue transition-colors mb-1.5">
-              {post.title}
-            </h2>
-            <p className="text-[15px] text-gray-500 leading-relaxed">
-              {post.excerpt}
-            </p>
+          <Link key={post.slug} href={`/blog/${post.slug}`}>
+            {post.title}
           </Link>
         ))}
-      </section>
+      </nav>
 
       <Footer />
     </main>

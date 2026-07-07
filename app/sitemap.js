@@ -1,7 +1,7 @@
 import { SITE, BLOG_POSTS } from "@/lib/config";
 
 export default function sitemap() {
-  const staticPages = ["", "/about", "/services", "/blog", "/contact"].map(
+  const staticPages = ["", "/about", "/services", "/blog", "/contact", "/privacy"].map(
     (path) => ({
       url: `${SITE.url}${path}`,
       lastModified: new Date(),

@@ -5,3 +5,7 @@ node_modules
 .DS_Store
 *.log
 .vercel
+
+# Lead data — contains personal info, never commit
+data/
+leads.json

@@ -1,59 +1,55 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { SITE, STARTER_QUESTIONS } from "@/lib/config";
+import { SITE, STARTER_QUESTIONS, LEAD_CAPTURE } from "@/lib/config";
+import LeadForm from "@/components/LeadForm";
 
 export default function ChatWidget() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [bookingShown, setBookingShown] = useState(false);
-  const messagesEndRef = useRef(null);
+  const [leadShown, setLeadShown] = useState(false);
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+
+  const scrollRef = useRef(null);
   const textareaRef = useRef(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
+  // Scroll ONLY the messages container, never the page.
+  // (Previous version used scrollIntoView, which pulled the whole page down.)
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, loading]);
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, loading, leadShown]);
 
   const autoResize = (el) => {
     el.style.height = "auto";
     el.style.height = Math.min(el.scrollHeight, 120) + "px";
   };
 
-  const send = async (text) => {
-    const content = (text ?? input).trim();
-    if (!content || loading) return;
-
-    const newMessages = [...messages, { role: "user", content }];
-    setMessages(newMessages);
-    setInput("");
-    if (textareaRef.current) textareaRef.current.style.height = "auto";
+  // Sends a turn to the API. `systemNote` lets us tell the model a lead was
+  // just captured, without showing that note as a user bubble.
+  const sendToApi = async (nextMessages) => {
     setLoading(true);
-
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: newMessages }),
+        body: JSON.stringify({ messages: nextMessages }),
       });
       const data = await res.json();
 
       let reply = data.reply || "Something went wrong. Please try again.";
-      const hasCTA = reply.includes("[BOOK_CTA]");
-      reply = reply.replace("[BOOK_CTA]", "").trim();
+      const hasLead = reply.includes("[LEAD_CAPTURE]");
+      reply = reply.replace("[LEAD_CAPTURE]", "").trim();
 
-      setMessages([...newMessages, { role: "assistant", content: reply }]);
+      setMessages([...nextMessages, { role: "assistant", content: reply }]);
 
-      if (hasCTA && !bookingShown) {
-        setBookingShown(true);
+      if (hasLead && !leadShown && !leadSubmitted) {
+        setLeadShown(true);
       }
     } catch {
       setMessages([
-        ...newMessages,
+        ...nextMessages,
         { role: "assistant", content: "Something went wrong. Please try again." },
       ]);
     } finally {
@@ -61,11 +57,39 @@ export default function ChatWidget() {
     }
   };
 
+  const send = async (text) => {
+    const content = (text ?? input).trim();
+    if (!content || loading) return;
+    const next = [...messages, { role: "user", content }];
+    setMessages(next);
+    setInput("");
+    if (textareaRef.current) textareaRef.current.style.height = "auto";
+    await sendToApi(next);
+  };
+
   const handleKey = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       send();
     }
+  };
+
+  // Called by the lead form once a lead is saved. Continues the conversation
+  // with a hidden system note so the advisor thanks them naturally.
+  const onLeadSaved = async (firstName) => {
+    setLeadShown(false);
+    setLeadSubmitted(true);
+    const next = [
+      ...messages,
+      {
+        role: "user",
+        content: `(System note: The user submitted their contact details${
+          firstName ? ` — first name ${firstName}` : ""
+        } to book the free call. A lead was captured. Thank them warmly, confirm someone will reach out to schedule, and offer to keep helping. Do not ask for details again.)`,
+      },
+    ];
+    setMessages(next);
+    await sendToApi(next);
   };
 
   const isEmpty = messages.length === 0;
@@ -81,7 +105,10 @@ export default function ChatWidget() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 py-6 flex flex-col gap-4 min-h-[380px] max-h-[380px] overflow-y-auto">
+      <div
+        ref={scrollRef}
+        className="flex-1 py-6 flex flex-col gap-4 min-h-[380px] max-h-[380px] overflow-y-auto"
+      >
         {isEmpty ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-2 px-5 py-10 text-center">
             <div className="text-3xl mb-1">💼</div>
@@ -104,24 +131,27 @@ export default function ChatWidget() {
             </div>
           </div>
         ) : (
-          messages.map((m, i) => (
-            <div
-              key={i}
-              className={`flex flex-col ${
-                m.role === "user" ? "items-end" : "items-start"
-              }`}
-            >
+          messages
+            // Hide any system-note "user" messages from the visible transcript.
+            .filter((m) => !m.content.startsWith("(System note:"))
+            .map((m, i) => (
               <div
-                className={`max-w-[82%] px-[15px] py-[11px] rounded-[18px] text-[15px] leading-normal whitespace-pre-wrap ${
-                  m.role === "user"
-                    ? "bg-brand-blue text-white rounded-br-[4px]"
-                    : "bg-gray-50 text-gray-900 rounded-bl-[4px]"
+                key={i}
+                className={`flex flex-col ${
+                  m.role === "user" ? "items-end" : "items-start"
                 }`}
               >
-                {m.content}
+                <div
+                  className={`max-w-[82%] px-[15px] py-[11px] rounded-[18px] text-[15px] leading-normal whitespace-pre-wrap ${
+                    m.role === "user"
+                      ? "bg-brand-blue text-white rounded-br-[4px]"
+                      : "bg-gray-50 text-gray-900 rounded-bl-[4px]"
+                  }`}
+                >
+                  {m.content}
+                </div>
               </div>
-            </div>
-          ))
+            ))
         )}
 
         {loading && (
@@ -134,28 +164,24 @@ export default function ChatWidget() {
           </div>
         )}
 
-        <div ref={messagesEndRef} />
+        {/* Lead capture form — appears inside the chat when [LEAD_CAPTURE] fires */}
+        {leadShown && !leadSubmitted && (
+          <div className="bg-[#F5F5F7] rounded-2xl border border-gray-100 p-5">
+            <h3 className="text-[16px] font-semibold text-gray-900 mb-1">
+              {LEAD_CAPTURE.heading}
+            </h3>
+            <p className="text-[13px] text-gray-500 mb-4 leading-snug">
+              {LEAD_CAPTURE.subtext}
+            </p>
+            <LeadForm
+              compact
+              source="chat"
+              businessContext={buildTranscript(messages)}
+              onSaved={onLeadSaved}
+            />
+          </div>
+        )}
       </div>
-
-      {/* Booking CTA */}
-      {bookingShown && (
-        <div className="p-4 bg-[#F5F5F7] rounded-2xl border border-gray-100 flex items-center justify-between gap-3">
-          <p className="text-[14px] text-gray-500 leading-snug">
-            <strong className="block text-gray-900 font-medium mb-0.5">
-              Let's map your business together.
-            </strong>
-            A free 30-min call to understand where you are and where you want to go.
-          </p>
-          <a
-            href={SITE.bookingUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-brand-blue hover:bg-brand-bluehover text-white rounded-full px-[18px] py-[9px] text-[14px] font-medium whitespace-nowrap flex-shrink-0 transition-colors"
-          >
-            Book free call →
-          </a>
-        </div>
-      )}
 
       {/* Input */}
       <div className="pt-4 pb-1 border-t border-gray-100 flex gap-2.5 items-end">
@@ -192,4 +218,13 @@ export default function ChatWidget() {
       </div>
     </div>
   );
+}
+
+// Builds a readable transcript summary attached to the lead, so the saved
+// record connects the person's details with their business context.
+function buildTranscript(messages) {
+  return messages
+    .filter((m) => !m.content.startsWith("(System note:"))
+    .map((m) => `${m.role === "user" ? "User" : "Advisor"}: ${m.content}`)
+    .join("\n");
 }
