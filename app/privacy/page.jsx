@@ -36,10 +36,10 @@ const sections = [
     ],
   },
   {
-    h: "Sharing with partners (optional, separate consent)",
+    h: "Sharing with partners",
     p: [
-      "We do not share your personal details with third parties for their own marketing unless you have given separate, explicit consent by ticking the optional partner box when you submit your details.",
-      "This consent is entirely optional — you can book your free consultation without agreeing to it. If you do opt in, you can withdraw your consent at any time by contacting us, and we will stop sharing your details going forward.",
+      "When you submit your details to request a consultation, you agree — as part of the consent you give at that point — that we may share your details with selected partners so they can present relevant offers.",
+      "You can withdraw this consent at any time by contacting us, and we will stop sharing your details going forward. If you would prefer to request a consultation without agreeing to partner sharing, contact us directly and we'll arrange it.",
     ],
   },
   {

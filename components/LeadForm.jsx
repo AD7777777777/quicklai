@@ -9,14 +9,13 @@ import { LEAD_CAPTURE } from "@/lib/config";
 //
 // Props:
 //   onSaved(firstName)  — called after a successful (or gracefully failed) save
-//   businessContext     — optional transcript/summary to attach to the lead
+//   businessContext     — optional business field/context to attach to the lead
 //   source              — where the lead came from (e.g. "chat", "services page")
 //   compact             — tighter spacing when embedded in the chat
 export default function LeadForm({ onSaved, businessContext = "", source = "chat", compact = false }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [consent, setConsent] = useState(false);
-  const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -27,7 +26,7 @@ export default function LeadForm({ onSaved, businessContext = "", source = "chat
       return;
     }
     if (!consent) {
-      setError("Please agree to the Privacy Policy to continue.");
+      setError("Please agree to continue.");
       return;
     }
     setSaving(true);
@@ -37,9 +36,12 @@ export default function LeadForm({ onSaved, businessContext = "", source = "chat
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          phone: phone.trim(),
+          // Send the phone exactly as typed (leading zeros preserved).
+          phone: phone,
           consent,
-          marketingOptIn,
+          // Consent is now a single combined agreement that includes the
+          // partner-sharing permission, so marketingOptIn tracks the same value.
+          marketingOptIn: consent,
           businessContext,
           source,
         }),
@@ -75,36 +77,30 @@ export default function LeadForm({ onSaved, businessContext = "", source = "chat
         />
         <input
           type="tel"
+          inputMode="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="Phone number"
           className="border border-gray-200 rounded-xl px-3.5 py-2.5 text-[15px] outline-none focus:border-brand-blue bg-white"
         />
 
-        <label className="flex items-start gap-2 text-[12px] text-gray-500 leading-snug cursor-pointer">
+        {/* Single combined consent. The partner-sharing permission is included
+            in the wording here and described in full in the Privacy Policy. */}
+        <label className="flex items-start gap-2.5 text-[12px] text-gray-500 leading-snug cursor-pointer bg-gray-50 rounded-xl p-3">
           <input
             type="checkbox"
             checked={consent}
             onChange={(e) => setConsent(e.target.checked)}
-            className="mt-0.5 flex-shrink-0"
+            className="mt-0.5 flex-shrink-0 accent-brand-blue"
           />
           <span>
             I agree to Quicklai's{" "}
             <Link href="/privacy" target="_blank" className="text-brand-blue underline">
               Privacy Policy
-            </Link>{" "}
-            and to being contacted about a consultation.
+            </Link>
+            , to being contacted about a consultation, and that my details may be
+            shared with selected partners for relevant offers.
           </span>
-        </label>
-
-        <label className="flex items-start gap-2 text-[12px] text-gray-400 leading-snug cursor-pointer">
-          <input
-            type="checkbox"
-            checked={marketingOptIn}
-            onChange={(e) => setMarketingOptIn(e.target.checked)}
-            className="mt-0.5 flex-shrink-0"
-          />
-          <span>{LEAD_CAPTURE.marketingOptInText}</span>
         </label>
 
         {error && <p className="text-[12px] text-red-500">{error}</p>}

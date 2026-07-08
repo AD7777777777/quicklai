@@ -20,7 +20,19 @@ const services = [
   },
   {
     title: "Ongoing advisory",
-    desc: "For owners who want a advisor in their corner — deeper, continued support tailored to your business.",
+    desc: "For owners who want an advisor in their corner — deeper, continued support tailored to your business.",
+  },
+  {
+    title: "AI solutions",
+    desc: "Custom AI tools built around your business — from smart chat assistants to decision support that fits how you actually work.",
+  },
+  {
+    title: "AI agents",
+    desc: "Autonomous agents that handle real tasks for you: answering customers, qualifying leads, following up, and more — around the clock.",
+  },
+  {
+    title: "Automation tools",
+    desc: "Streamline the repetitive work that eats your day — connect your tools, remove manual steps, and let the busywork run itself.",
   },
 ];
 
@@ -36,6 +48,10 @@ const serviceFaqs = [
   {
     q: "How do I get started?",
     a: "Ask the AI advisor a question on the homepage, or book a free 30-minute business mapping call directly.",
+  },
+  {
+    q: "What AI solutions does Quicklai build?",
+    a: "Quicklai builds custom AI solutions, AI agents, and automation tools for small and medium businesses — including chat assistants, lead qualification and follow-up agents, and workflow automation that removes repetitive manual work.",
   },
 ];
 

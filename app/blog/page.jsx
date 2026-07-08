@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import BlogList from "@/components/BlogList";
 import { BLOG_POSTS } from "@/lib/config";
 
 export const metadata = {
@@ -22,31 +23,9 @@ export default function Blog() {
         </p>
       </section>
 
-      {/*
-        Scroll box: shows ~7 posts at once, the rest reachable by scrolling.
-        All 36 posts render in the DOM, so crawlers and AI engines still see
-        every post — the scroll only affects what's visible, not what's indexed.
-      */}
+      {/* Paginated list: 7 posts per page with < 1–7 > controls. */}
       <section className="max-w-[680px] mx-auto px-5 pb-16">
-        <div className="h-[640px] overflow-y-auto rounded-2xl border border-gray-100 divide-y divide-gray-100 px-5">
-          {BLOG_POSTS.map((post) => (
-            <article key={post.slug} className="py-6">
-              <p className="text-[12px] text-gray-400 mb-1">
-                {new Date(post.date).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-              <h2 className="text-[22px] font-medium text-gray-900 mb-1.5">
-                {post.title}
-              </h2>
-              <p className="text-[15px] text-gray-500 leading-relaxed">
-                {post.excerpt}
-              </p>
-            </article>
-          ))}
-        </div>
+        <BlogList posts={BLOG_POSTS} />
       </section>
 
       {/*

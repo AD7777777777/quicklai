@@ -10,6 +10,7 @@ export default function ChatWidget() {
   const [loading, setLoading] = useState(false);
   const [leadShown, setLeadShown] = useState(false);
   const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [businessField, setBusinessField] = useState("");
 
   const scrollRef = useRef(null);
   const textareaRef = useRef(null);
@@ -40,7 +41,17 @@ export default function ChatWidget() {
 
       let reply = data.reply || "Something went wrong. Please try again.";
       const hasLead = reply.includes("[LEAD_CAPTURE]");
-      reply = reply.replace("[LEAD_CAPTURE]", "").trim();
+
+      // Extract the business field the advisor inferred, then strip both markers
+      // so the user never sees them.
+      const fieldMatch = reply.match(/\[BUSINESS_FIELD:\s*([^\]]*)\]/i);
+      if (fieldMatch) {
+        setBusinessField(fieldMatch[1].trim());
+      }
+      reply = reply
+        .replace(/\[BUSINESS_FIELD:[^\]]*\]/gi, "")
+        .replace("[LEAD_CAPTURE]", "")
+        .trim();
 
       setMessages([...nextMessages, { role: "assistant", content: reply }]);
 
@@ -113,7 +124,7 @@ export default function ChatWidget() {
           <div className="flex-1 flex flex-col items-center justify-center gap-2 px-5 py-10 text-center">
             <div className="text-3xl mb-1">💼</div>
             <h2 className="text-[17px] font-medium text-gray-900">
-              How can I help your business?
+              Need a business advice?
             </h2>
             <p className="text-[14px] text-gray-500 max-w-[320px] leading-relaxed">
               Ask me anything about strategy, growth, operations, or finance.
@@ -176,7 +187,7 @@ export default function ChatWidget() {
             <LeadForm
               compact
               source="chat"
-              businessContext={buildTranscript(messages)}
+              businessContext={businessField}
               onSaved={onLeadSaved}
             />
           </div>
@@ -218,13 +229,4 @@ export default function ChatWidget() {
       </div>
     </div>
   );
-}
-
-// Builds a readable transcript summary attached to the lead, so the saved
-// record connects the person's details with their business context.
-function buildTranscript(messages) {
-  return messages
-    .filter((m) => !m.content.startsWith("(System note:"))
-    .map((m) => `${m.role === "user" ? "User" : "Advisor"}: ${m.content}`)
-    .join("\n");
 }
