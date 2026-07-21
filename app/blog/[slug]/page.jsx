@@ -13,13 +13,20 @@ export function generateStaticParams() {
 export function generateMetadata({ params }) {
   const post = POST_CONTENT[params.slug];
   if (!post) return {};
+  const modified = post.updated || post.date;
   return {
     title: post.title,
     description: post.description,
+    alternates: {
+      canonical: `${SITE.url}/blog/${params.slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.description,
       type: "article",
+      publishedTime: post.date,
+      modifiedTime: modified,
+      url: `${SITE.url}/blog/${params.slug}`,
     },
   };
 }
@@ -28,15 +35,26 @@ export default function BlogPost({ params }) {
   const post = POST_CONTENT[params.slug];
   if (!post) notFound();
 
-  // AEO: Article schema + FAQPage schema on every post.
+  // AEO: BlogPosting schema + FAQPage schema on every post.
+  // dateModified is a key freshness signal — engines treat pages without it as
+  // potentially stale. It defaults to the published date but uses post.updated
+  // when you've refreshed a post (bump that date when you edit content).
+  const modified = post.updated || post.date;
   const articleSchema = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
+    "@id": `${SITE.url}/blog/${params.slug}/#article`,
     headline: post.title,
     description: post.description,
     datePublished: post.date,
-    author: { "@type": "Organization", name: SITE.name },
-    publisher: { "@type": "Organization", name: SITE.name },
+    dateModified: modified,
+    author: {
+      "@type": "Organization",
+      name: SITE.name,
+      url: SITE.url,
+    },
+    publisher: { "@id": `${SITE.url}/#organization` },
+    mainEntityOfPage: `${SITE.url}/blog/${params.slug}`,
   };
 
   const faqSchema = {
@@ -49,6 +67,22 @@ export default function BlogPost({ params }) {
     })),
   };
 
+  // Breadcrumb schema gives engines a clean map of where this page sits.
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE.url },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE.url}/blog` },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: `${SITE.url}/blog/${params.slug}`,
+      },
+    ],
+  };
+
   return (
     <main>
       <Nav />
@@ -59,6 +93,10 @@ export default function BlogPost({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
       <article className="max-w-[680px] mx-auto px-5 pt-16 pb-8">
@@ -74,6 +112,16 @@ export default function BlogPost({ params }) {
             month: "long",
             day: "numeric",
           })}
+          {post.updated && post.updated !== post.date && (
+            <span>
+              {" · Updated "}
+              {new Date(post.updated).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+          )}
         </p>
         <h1 className="text-[36px] font-semibold text-gray-900 tracking-tight leading-tight mb-6">
           {post.title}
