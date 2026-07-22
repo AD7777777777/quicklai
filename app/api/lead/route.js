@@ -14,7 +14,17 @@
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, phone, consent, marketingOptIn, businessContext, source } = body;
+    const {
+      name,
+      phone,
+      email,
+      contactMethods,
+      consent,
+      marketingOptIn,
+      businessContext,
+      recommendedTools,
+      source,
+    } = body;
 
     // Consent to the privacy policy is required to store a lead at all.
     if (!name || !phone || !consent) {
@@ -27,9 +37,15 @@ export async function POST(request) {
     const lead = {
       name: String(name).slice(0, 200),
       phone: String(phone).slice(0, 50),
+      email: String(email || "").slice(0, 200),
+      // Preferred contact methods, stored as a comma-separated string.
+      contactMethods: Array.isArray(contactMethods)
+        ? contactMethods.join(", ").slice(0, 200)
+        : String(contactMethods || "").slice(0, 200),
       consent: Boolean(consent),
       marketingOptIn: Boolean(marketingOptIn), // separate, explicit opt-in
       businessContext: String(businessContext || "").slice(0, 5000),
+      recommendedTools: String(recommendedTools || "").slice(0, 1000),
       source: String(source || "unknown").slice(0, 100),
       createdAt: new Date().toISOString(),
     };

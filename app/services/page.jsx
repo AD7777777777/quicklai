@@ -6,7 +6,7 @@ import BookCallButton from "@/components/BookCallButton";
 export const metadata = {
   title: "Services",
   description:
-    "Quicklai offers instant AI business guidance and free 30-minute business mapping calls for small and medium business owners — covering strategy, cash flow, growth, hiring, and operations.",
+    "Quicklai offers instant AI guidance and free 30-minute business mapping calls for small and medium business owners — plus custom AI solutions, AI agents, and automation tools for management and marketing.",
 };
 
 const services = [
@@ -15,8 +15,8 @@ const services = [
     desc: "Ask any business question and get a clear, high-level read on the core issue — in seconds, free.",
   },
   {
-    title: "Business mapping call",
-    desc: "A free 30-minute call to understand where your business is, where you want it to go, and the highest-impact next steps.",
+    title: "AI marketing assistant",
+    desc: "Keeps your marketing consistent — drafting and scheduling posts and emails in your voice, and repurposing one idea across every channel.",
   },
   {
     title: "Ongoing advisory",
@@ -43,7 +43,7 @@ const serviceFaqs = [
   },
   {
     q: "What areas does Quicklai advise on?",
-    a: "Strategy, cash flow and profitability, growth and marketing, hiring and team structure, pricing, and day-to-day operations.",
+    a: "Quicklai focuses on business management and marketing — customer service, lead generation and follow-up, marketing and content, automation, and operations — always with an eye to where AI and automation can help.",
   },
   {
     q: "How do I get started?",

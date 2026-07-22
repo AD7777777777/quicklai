@@ -23,10 +23,13 @@ function doPost(e) {
         "Timestamp",
         "Name",
         "Phone",
+        "Email",
+        "Contact Methods",
         "Source",
         "Privacy Consent",
         "Marketing Opt-In",
         "Business Field",
+        "Recommended AI Tools",
       ]);
     }
 
@@ -41,10 +44,13 @@ function doPost(e) {
       data.createdAt || new Date().toISOString(),
       data.name || "",
       phoneValue,
+      data.email || "",
+      data.contactMethods || "",
       data.source || "",
       data.consent ? "Yes" : "No",
       data.marketingOptIn ? "Yes" : "No",
       data.businessContext || "",
+      data.recommendedTools || "",
     ]);
 
     lock.releaseLock();
@@ -80,8 +86,11 @@ function sendLeadEmail(data) {
 
   var name = data.name || "(no name)";
   var phone = data.phone ? String(data.phone) : "(no phone)";
+  var emailAddr = data.email || "(none)";
+  var methods = data.contactMethods || "(none)";
   var source = data.source || "unknown";
   var field = data.businessContext || "(not specified)";
+  var tools = data.recommendedTools || "(none noted)";
   var when = data.createdAt || new Date().toISOString();
 
   var subject = "New Quicklai lead: " + name;
@@ -90,7 +99,10 @@ function sendLeadEmail(data) {
     "You have a new lead from Quicklai.\n\n" +
     "Name:            " + name + "\n" +
     "Phone:           " + phone + "\n" +
+    "Email:           " + emailAddr + "\n" +
+    "Reach via:       " + methods + "\n" +
     "Business field:  " + field + "\n" +
+    "AI tools discussed: " + tools + "\n" +
     "Source:          " + source + "\n" +
     "Time:            " + when + "\n\n" +
     "Privacy consent: " + (data.consent ? "Yes" : "No") + "\n" +
@@ -115,8 +127,11 @@ function runEmailTest() {
   sendLeadEmail({
     name: "Test Lead",
     phone: "0501234567",
+    email: "test@example.com",
+    contactMethods: "Call, WhatsApp",
     source: "manual test",
     businessContext: "bakery / food retail",
+    recommendedTools: "AI agent for after-hours enquiries; automated lead follow-up",
     consent: true,
     marketingOptIn: true,
     createdAt: new Date().toISOString(),

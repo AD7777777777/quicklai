@@ -12,11 +12,11 @@ export default function Home() {
       {/* Hero: minimal text, then the widget takes the stage */}
       <section className="max-w-[980px] mx-auto px-5 pt-16 pb-6 text-center">
         <h1 className="text-[40px] sm:text-[48px] font-semibold text-gray-900 tracking-tight leading-tight">
-          Chat with your business advisor.
+          Chat with your AI solutions advisor.
         </h1>
         <p className="text-[19px] text-gray-500 mt-3 max-w-[560px] mx-auto leading-relaxed">
-          Instant, expert guidance for small and medium businesses. Ask anything —
-          strategy, cash flow, growth, hiring.
+          Tailored advice and the AI tools to act on it — for smarter business
+          management and marketing. Ask anything to get started.
         </p>
       </section>
 

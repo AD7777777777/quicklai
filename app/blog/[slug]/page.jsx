@@ -167,11 +167,11 @@ export default function BlogPost({ params }) {
         {/* Soft CTA */}
         <div className="mt-12 bg-[#F5F5F7] rounded-2xl p-8 text-center">
           <h2 className="text-[22px] font-semibold text-gray-900 mb-2">
-            Want real direction on this?
+            Want to put AI to work in your business?
           </h2>
           <p className="text-[15px] text-gray-500 mb-5 max-w-[420px] mx-auto leading-relaxed">
-            A free 30-minute business mapping call turns this advice into a plan
-            built for your business.
+            A free 30-minute business mapping call turns these ideas into
+            specific AI tools Quicklai can build for you.
           </p>
           <BookCallButton source={`blog: ${post.title}`} />
         </div>

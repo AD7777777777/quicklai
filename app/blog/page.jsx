@@ -7,7 +7,7 @@ import { BLOG_POSTS } from "@/lib/config";
 export const metadata = {
   title: "Blog",
   description:
-    "Practical answers to the questions small and medium business owners actually ask — cash flow, pricing, hiring, growth, and strategy.",
+    "Practical answers on using AI to manage and market a small business — customer service, lead follow-up, marketing, automation, and growth.",
 };
 
 export default function Blog() {
@@ -19,7 +19,7 @@ export default function Blog() {
           Answers for business owners.
         </h1>
         <p className="text-[19px] text-gray-500 leading-relaxed">
-          Straight answers to the questions SMB owners ask most.
+          Straight answers on using AI to manage and market your business.
         </p>
       </section>
 

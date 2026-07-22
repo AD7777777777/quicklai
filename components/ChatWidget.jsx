@@ -11,15 +11,30 @@ export default function ChatWidget() {
   const [leadShown, setLeadShown] = useState(false);
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [businessField, setBusinessField] = useState("");
+  const [recommendedTools, setRecommendedTools] = useState("");
 
   const scrollRef = useRef(null);
+  const lastMsgRef = useRef(null);
   const textareaRef = useRef(null);
 
-  // Scroll ONLY the messages container, never the page.
-  // (Previous version used scrollIntoView, which pulled the whole page down.)
+  // Keep scrolling contained to the messages box (never move the page), and
+  // when a new ASSISTANT reply arrives, bring the START of that reply into
+  // view — so the user reads the answer from the top without scrolling up.
   useEffect(() => {
-    const el = scrollRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const last = messages[messages.length - 1];
+    if (last && last.role === "assistant" && lastMsgRef.current) {
+      // The newest answer is a direct child of the scroll container, so its
+      // offsetTop is measured from the container's content top. Scroll there
+      // (minus a small gap) so the answer starts at the top of the view.
+      const node = lastMsgRef.current;
+      container.scrollTop = Math.max(0, node.offsetTop - 8);
+    } else {
+      // For user messages / typing / the lead form, go to the bottom.
+      container.scrollTop = container.scrollHeight;
+    }
   }, [messages, loading, leadShown]);
 
   const autoResize = (el) => {
@@ -42,14 +57,19 @@ export default function ChatWidget() {
       let reply = data.reply || "Something went wrong. Please try again.";
       const hasLead = reply.includes("[LEAD_CAPTURE]");
 
-      // Extract the business field the advisor inferred, then strip both markers
-      // so the user never sees them.
+      // Extract the business field and the recommended AI tools the advisor
+      // named, then strip all markers so the user never sees them.
       const fieldMatch = reply.match(/\[BUSINESS_FIELD:\s*([^\]]*)\]/i);
       if (fieldMatch) {
         setBusinessField(fieldMatch[1].trim());
       }
+      const toolsMatch = reply.match(/\[RECOMMENDED_TOOLS:\s*([^\]]*)\]/i);
+      if (toolsMatch) {
+        setRecommendedTools(toolsMatch[1].trim());
+      }
       reply = reply
         .replace(/\[BUSINESS_FIELD:[^\]]*\]/gi, "")
+        .replace(/\[RECOMMENDED_TOOLS:[^\]]*\]/gi, "")
         .replace("[LEAD_CAPTURE]", "")
         .trim();
 
@@ -127,7 +147,7 @@ export default function ChatWidget() {
               Need a business advice?
             </h2>
             <p className="text-[14px] text-gray-500 max-w-[320px] leading-relaxed">
-              Ask me anything about strategy, growth, operations, or finance.
+              Ask me anything about growing, managing, or marketing your business with AI.
             </p>
             <div className="flex flex-wrap gap-2 justify-center mt-2">
               {STARTER_QUESTIONS.map((q) => (
@@ -142,12 +162,15 @@ export default function ChatWidget() {
             </div>
           </div>
         ) : (
-          messages
-            // Hide any system-note "user" messages from the visible transcript.
-            .filter((m) => !m.content.startsWith("(System note:"))
-            .map((m, i) => (
+          (() => {
+            // Visible transcript excludes system-note messages.
+            const visible = messages.filter(
+              (m) => !m.content.startsWith("(System note:")
+            );
+            return visible.map((m, i) => (
               <div
                 key={i}
+                ref={i === visible.length - 1 ? lastMsgRef : null}
                 className={`flex flex-col ${
                   m.role === "user" ? "items-end" : "items-start"
                 }`}
@@ -162,7 +185,8 @@ export default function ChatWidget() {
                   {m.content}
                 </div>
               </div>
-            ))
+            ));
+          })()
         )}
 
         {loading && (
@@ -188,6 +212,24 @@ export default function ChatWidget() {
               compact
               source="chat"
               businessContext={businessField}
+              recommendedTools={
+                recommendedTools ||
+                // Fallback: if the model omitted the marker, capture the last
+                // advisor message (which contains the advice + recommendation)
+                // so the lead still has useful context, trimmed for length.
+                (() => {
+                  const lastAdvisor = [...messages]
+                    .reverse()
+                    .find(
+                      (m) =>
+                        m.role === "assistant" &&
+                        !m.content.startsWith("(System note:")
+                    );
+                  return lastAdvisor
+                    ? `(from chat) ${lastAdvisor.content.slice(0, 600)}`
+                    : "";
+                })()
+              }
               onSaved={onLeadSaved}
             />
           </div>

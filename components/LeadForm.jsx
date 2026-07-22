@@ -7,22 +7,37 @@ import { LEAD_CAPTURE } from "@/lib/config";
 // Shared lead-capture form. Used both inside the chat widget and inside the
 // marketing-page popup, so capture logic and consent live in exactly one place.
 //
+// Collects: name + phone (required), email (optional), and preferred contact
+// methods (multi-select: Call / WhatsApp / Email).
+//
 // Props:
 //   onSaved(firstName)  — called after a successful (or gracefully failed) save
 //   businessContext     — optional business field/context to attach to the lead
 //   source              — where the lead came from (e.g. "chat", "services page")
 //   compact             — tighter spacing when embedded in the chat
-export default function LeadForm({ onSaved, businessContext = "", source = "chat", compact = false }) {
+export default function LeadForm({ onSaved, businessContext = "", recommendedTools = "", source = "chat", compact = false }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [methods, setMethods] = useState([]);
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+
+  const toggleMethod = (m) => {
+    setMethods((prev) =>
+      prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]
+    );
+  };
 
   const submit = async () => {
     setError("");
     if (!name.trim() || !phone.trim()) {
       setError("Please add your name and phone number.");
+      return;
+    }
+    if (methods.length === 0) {
+      setError("Please pick at least one way for us to reach you.");
       return;
     }
     if (!consent) {
@@ -38,11 +53,14 @@ export default function LeadForm({ onSaved, businessContext = "", source = "chat
           name: name.trim(),
           // Send the phone exactly as typed (leading zeros preserved).
           phone: phone,
+          email: email.trim(),
+          contactMethods: methods,
           consent,
-          // Consent is now a single combined agreement that includes the
+          // Consent is a single combined agreement that includes the
           // partner-sharing permission, so marketingOptIn tracks the same value.
           marketingOptIn: consent,
           businessContext,
+          recommendedTools,
           source,
         }),
       });
@@ -58,22 +76,22 @@ export default function LeadForm({ onSaved, businessContext = "", source = "chat
     <div className={compact ? "" : "w-full"}>
       {!compact && (
         <>
-          <h3 className="text-[18px] font-semibold text-gray-900 mb-1">
+          <h3 className="text-[17px] font-semibold text-gray-900 mb-1">
             {LEAD_CAPTURE.heading}
           </h3>
-          <p className="text-[14px] text-gray-500 mb-4 leading-snug">
+          <p className="text-[13px] text-gray-500 mb-3 leading-snug">
             {LEAD_CAPTURE.subtext}
           </p>
         </>
       )}
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2.5">
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Your name"
-          className="border border-gray-200 rounded-xl px-3.5 py-2.5 text-[15px] outline-none focus:border-brand-blue bg-white"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-[14px] outline-none focus:border-brand-blue bg-white"
         />
         <input
           type="tel"
@@ -81,12 +99,46 @@ export default function LeadForm({ onSaved, businessContext = "", source = "chat
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="Phone number"
-          className="border border-gray-200 rounded-xl px-3.5 py-2.5 text-[15px] outline-none focus:border-brand-blue bg-white"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-[14px] outline-none focus:border-brand-blue bg-white"
         />
+        <input
+          type="email"
+          inputMode="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email (optional)"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-[14px] outline-none focus:border-brand-blue bg-white"
+        />
+
+        {/* Preferred contact methods — pick any that apply. */}
+        <div>
+          <p className="text-[12px] text-gray-500 mb-1.5">
+            How should we reach you? (pick any)
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {LEAD_CAPTURE.contactMethods.map((m) => {
+              const active = methods.includes(m);
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => toggleMethod(m)}
+                  className={`rounded-full px-3.5 py-1.5 text-[13px] font-medium border transition-colors ${
+                    active
+                      ? "bg-brand-blue text-white border-brand-blue"
+                      : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+                  }`}
+                >
+                  {m}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Single combined consent. The partner-sharing permission is included
             in the wording here and described in full in the Privacy Policy. */}
-        <label className="flex items-start gap-2.5 text-[12px] text-gray-500 leading-snug cursor-pointer bg-gray-50 rounded-xl p-3">
+        <label className="flex items-start gap-2 text-[11px] text-gray-500 leading-snug cursor-pointer bg-gray-50 rounded-lg p-2.5">
           <input
             type="checkbox"
             checked={consent}
@@ -108,9 +160,9 @@ export default function LeadForm({ onSaved, businessContext = "", source = "chat
         <button
           onClick={submit}
           disabled={saving}
-          className="bg-brand-blue hover:bg-brand-bluehover disabled:opacity-60 text-white rounded-full px-6 py-2.5 text-[15px] font-medium transition-colors"
+          className="bg-brand-blue hover:bg-brand-bluehover disabled:opacity-60 text-white rounded-full px-6 py-2 text-[14px] font-medium transition-colors"
         >
-          {saving ? "Sending…" : "Request my free call"}
+          {saving ? "Sending…" : "Send my details"}
         </button>
       </div>
     </div>

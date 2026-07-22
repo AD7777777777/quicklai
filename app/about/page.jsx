@@ -11,11 +11,11 @@ export const metadata = {
 const aboutFaqs = [
   {
     q: "Why did Quicklai start?",
-    a: "Most SMB owners can't afford a full-time advisor, and generic advice online doesn't fit their specific situation. Quicklai bridges that gap — instant guidance first, then a real human conversation when it matters.",
+    a: "Most SMB owners know AI could help but don't have time to figure out where. Quicklai bridges that gap — it pinpoints your real management and marketing challenges, then recommends specific AI tools it can build to solve them.",
   },
   {
     q: "How is Quicklai different from a search engine?",
-    a: "Search gives you articles. Quicklai gives you a direct read on your specific problem in plain language, then a path to real help — a free business mapping call.",
+    a: "Search gives you generic articles. Quicklai reads your specific situation, then recommends concrete AI tools and automations it can build to fix it — plus a free business mapping call to make it real.",
   },
 ];
 
@@ -30,18 +30,18 @@ export default function About() {
         <div className="prose text-[17px] text-gray-600 leading-relaxed flex flex-col gap-5">
           <p>
             Running a small or medium business means making big decisions with
-            limited time and no one to check your thinking. Quicklai exists to
-            change that.
+            limited time — and knowing AI could help, but not where to start.
+            Quicklai exists to change that.
           </p>
           <p>
-            We combine an AI business advisor — trained to cut straight to the
-            core of your challenge — with real human consultation. The AI gives
-            you fast, high-level direction. When you need to go deeper, a free
-            30-minute business mapping call turns that direction into a plan.
+            Our AI advisor gets to the core of your management and marketing
+            challenges, then recommends specific AI tools and automations we can
+            build to solve them. When you're ready, a free 30-minute business
+            mapping call turns those recommendations into a real plan.
           </p>
           <p>
-            No jargon. No fluff. Just the kind of straight talk that helps you
-            move forward with confidence.
+            No jargon. No hype. Just practical advice and AI that actually moves
+            your business forward.
           </p>
         </div>
       </article>

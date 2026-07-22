@@ -18,8 +18,8 @@ export default function Contact() {
           Let's talk.
         </h1>
         <p className="text-[19px] text-gray-500 leading-relaxed">
-          Book a free business mapping call, or send us a message and we'll get
-          back to you.
+          Leave your details and we'll get back to you however suits you best —
+          call, WhatsApp, or email — to set up your free session.
         </p>
         <div className="mt-6">
           <BookCallButton source="contact page" />

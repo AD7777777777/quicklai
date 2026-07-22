@@ -7,11 +7,11 @@ import LeadForm from "@/components/LeadForm";
 // Drop-in replacement for the old Calendly link on marketing pages.
 //
 // Props:
-//   label   — button text (default "Book your free call →")
+//   label   — button text (default "Get in touch →")
 //   source  — where the lead came from, for your records
 //   variant — "solid" (filled blue) or "inline" (subtle)
 export default function BookCallButton({
-  label = "Book your free call →",
+  label = "Get in touch →",
   source = "marketing page",
   variant = "solid",
 }) {
@@ -69,7 +69,7 @@ export default function BookCallButton({
           />
 
           {/* Panel */}
-          <div className="relative bg-white rounded-3xl shadow-xl w-full max-w-[420px] p-7">
+          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-[360px] max-h-[90vh] overflow-y-auto p-5">
             <button
               onClick={close}
               aria-label="Close"
@@ -95,8 +95,8 @@ export default function BookCallButton({
                   You're all set.
                 </h3>
                 <p className="text-[15px] text-gray-500 leading-relaxed mb-6">
-                  Thanks — we'll reach out shortly to schedule your free
-                  30-minute business mapping call.
+                  Thanks — we'll get back to you shortly using the contact
+                  method you chose, to set up your free 30-minute session.
                 </p>
                 <button
                   onClick={close}
