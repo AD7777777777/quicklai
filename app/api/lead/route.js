@@ -11,8 +11,28 @@
 //  and in Vercel's Environment Variables for production).
 // ------------------------------------------------------------------
 
+import { rateLimit, getClientKey } from "@/lib/rateLimit";
+
+// Spam/abuse guard — generous for a real user submitting once, tight enough
+// to stop a script from flooding your sheet and inbox with fake leads.
+const RATE_LIMIT = 5;
+const RATE_WINDOW_MS = 60 * 1000;
+
+// Loose but useful email sanity check — rejects obvious garbage without
+// being so strict it blocks real, unusual-but-valid addresses.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export async function POST(request) {
   try {
+    const clientKey = getClientKey(request);
+    const { allowed } = rateLimit(`lead:${clientKey}`, RATE_LIMIT, RATE_WINDOW_MS);
+    if (!allowed) {
+      return Response.json(
+        { error: "Too many submissions. Please wait a moment and try again." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const {
       name,
@@ -32,6 +52,9 @@ export async function POST(request) {
         { error: "Name, phone, and privacy consent are required." },
         { status: 400 }
       );
+    }
+    if (email && !EMAIL_PATTERN.test(String(email).trim())) {
+      return Response.json({ error: "That email doesn't look right." }, { status: 400 });
     }
 
     const lead = {

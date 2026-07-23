@@ -96,7 +96,7 @@ export default function BookCallButton({
                 </h3>
                 <p className="text-[15px] text-gray-500 leading-relaxed mb-6">
                   Thanks — we'll get back to you shortly using the contact
-                  method you chose, to set up your free 30-minute session.
+                  method you chose. It's free and there's no obligation.
                 </p>
                 <button
                   onClick={close}

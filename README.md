@@ -192,3 +192,30 @@ chat) in the Sheet.
 **One shared form.** Both the chat and the popups use a single
 `components/LeadForm.jsx`, so consent handling and capture logic live in exactly
 one place. The popup wrapper is `components/BookCallButton.jsx`.
+
+---
+
+## Security
+
+This site includes the following hardening:
+
+**HTTP security headers** (`next.config.js`) — Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, Strict-Transport-Security, Cross-Origin-Opener-Policy, Cross-Origin-Resource-Policy. Also disables the `X-Powered-By: Next.js` header.
+
+**Rate limiting** (`lib/rateLimit.js`) on both API routes:
+- `/api/chat` — 20 requests/minute per client (protects your paid Anthropic API from abuse)
+- `/api/lead` — 5 requests/minute per client (protects against spam submissions)
+
+> **Honest limitation:** this rate limiter is in-memory, scoped to a single warm serverless instance. It stops casual abuse and accidental hammering, but Vercel can run multiple instances, so a determined, distributed attacker could exceed it. For a hard guarantee, swap it for a shared store like Vercel KV or Upstash Redis (free tier available) — `lib/rateLimit.js` is written so that's a one-file change.
+
+**Input validation** on `/api/chat` — rejects malformed messages, caps conversation length (40 messages) and message length (4,000 characters) to prevent cost-abuse via oversized payloads.
+
+**Input validation** on `/api/lead` — required fields enforced server-side, basic email format check, all string fields length-capped before being sent to Google Sheets.
+
+**Secrets never reach the browser** — `ANTHROPIC_API_KEY` and `GOOGLE_SHEETS_WEBHOOK_URL` are used only in server-side API routes. `.env.local` is gitignored.
+
+**Dependencies** — Next.js pinned to the patched `14.2.35` (see the [Next.js security advisory](https://nextjs.org/blog/security-update-2025-12-11)). Run `npm audit` periodically to check for new advisories in other dependencies.
+
+### If you want to go further
+- Move rate limiting to Vercel KV / Upstash Redis for a hard guarantee across all instances
+- Add a CAPTCHA (e.g. Cloudflare Turnstile) to the lead form if spam becomes a real problem
+- Consider Vercel's built-in Firewall / Attack Challenge Mode for additional DDoS protection

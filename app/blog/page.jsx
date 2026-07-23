@@ -2,18 +2,38 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import BlogList from "@/components/BlogList";
-import { BLOG_POSTS } from "@/lib/config";
+import FAQ from "@/components/FAQ";
+import { BLOG_POSTS, BLOG_FAQS } from "@/lib/config";
+import { pageSchema, breadcrumbSchema, jsonLd } from "@/lib/schema";
 
 export const metadata = {
+  alternates: { canonical: "/blog" },
   title: "Blog",
   description:
     "Practical answers on using AI to manage and market a small business — customer service, lead follow-up, marketing, automation, and growth.",
 };
 
+// AEO: page-level schema + breadcrumbs, linked to the Organization entity.
+const thisPageSchema = pageSchema({
+  type: "CollectionPage",
+  path: "/blog",
+  name: "Quicklai blog",
+  description: metadata.description,
+});
+const crumbs = breadcrumbSchema([{ name: "Blog", path: "/blog" }]);
+
 export default function Blog() {
   return (
     <main>
       <Nav />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(thisPageSchema)}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(crumbs)}
+      />
       <section className="max-w-[680px] mx-auto px-5 pt-16 pb-8">
         <h1 className="text-[40px] font-semibold text-gray-900 tracking-tight leading-tight mb-3">
           Answers for business owners.
@@ -40,6 +60,8 @@ export default function Blog() {
           </Link>
         ))}
       </nav>
+
+      <FAQ items={BLOG_FAQS} />
 
       <Footer />
     </main>

@@ -2,11 +2,13 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import FAQ from "@/components/FAQ";
 import BookCallButton from "@/components/BookCallButton";
+import { pageSchema, breadcrumbSchema, serviceListSchema, jsonLd } from "@/lib/schema";
 
 export const metadata = {
+  alternates: { canonical: "/services" },
   title: "Services",
   description:
-    "Quicklai offers instant AI guidance and free 30-minute business mapping calls for small and medium business owners — plus custom AI solutions, AI agents, and automation tools for management and marketing.",
+    "Quicklai offers instant AI guidance for small and medium business owners — plus custom AI solutions, AI agents, and automation tools for management and marketing. Leave your details and we'll get back to you.",
 };
 
 const services = [
@@ -39,7 +41,7 @@ const services = [
 const serviceFaqs = [
   {
     q: "How much does Quicklai cost?",
-    a: "The AI advisor and the first business mapping call are free. Ongoing advisory is discussed on the call, based on what your business actually needs.",
+    a: "The AI advisor and the first conversation are free. Ongoing advisory is discussed then, based on what your business actually needs.",
   },
   {
     q: "What areas does Quicklai advise on?",
@@ -47,7 +49,7 @@ const serviceFaqs = [
   },
   {
     q: "How do I get started?",
-    a: "Ask the AI advisor a question on the homepage, or book a free 30-minute business mapping call directly.",
+    a: "Ask the AI advisor a question on the homepage, or leave your details and we'll get back to you.",
   },
   {
     q: "What AI solutions does Quicklai build?",
@@ -55,10 +57,34 @@ const serviceFaqs = [
   },
 ];
 
+// AEO: page-level schema + breadcrumbs, linked to the Organization entity.
+const thisPageSchema = pageSchema({
+  type: "WebPage",
+  path: "/services",
+  name: "Quicklai services",
+  description: metadata.description,
+});
+const crumbs = breadcrumbSchema([{ name: "Services", path: "/services" }]);
+// Each offering as a Service entity, so AI engines can answer questions
+// like "who builds AI agents for small businesses".
+const servicesSchema = serviceListSchema(services);
+
 export default function Services() {
   return (
     <main>
       <Nav />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(thisPageSchema)}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(crumbs)}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(servicesSchema)}
+      />
       <section className="max-w-[980px] mx-auto px-5 pt-16 pb-6 text-center">
         <h1 className="text-[40px] font-semibold text-gray-900 tracking-tight leading-tight mb-3">
           How Quicklai helps.

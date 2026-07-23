@@ -4,6 +4,10 @@ import ChatWidget from "@/components/ChatWidget";
 import FAQ from "@/components/FAQ";
 import { HOME_FAQS, SITE } from "@/lib/config";
 
+export const metadata = {
+  alternates: { canonical: "/" },
+};
+
 export default function Home() {
   return (
     <main>

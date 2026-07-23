@@ -1,11 +1,13 @@
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { SITE } from "@/lib/config";
+import { pageSchema, breadcrumbSchema, jsonLd } from "@/lib/schema";
 
 export const metadata = {
+  alternates: { canonical: "/privacy" },
   title: "Privacy Policy",
   description:
-    "How Quicklai collects, uses, stores, and protects the information you share — including the details you provide to book a free consultation.",
+    "How Quicklai collects, uses, stores, and protects the information you share — including the details you provide so we can get back to you.",
 };
 
 // NOTE: This is a clear, honest starting policy written in plain language.
@@ -24,14 +26,14 @@ const sections = [
     h: "Information we collect",
     p: [
       "When you chat with the AI advisor, we process the messages you send so the advisor can respond and give relevant guidance.",
-      "When you ask to book a free consultation, we collect the contact details you provide — your name and phone number — together with a summary of the business context from your conversation, so we can prepare for and schedule your call.",
+      "When you ask us to get back to you, we collect the contact details you provide — your name, phone number, optional email, and how you'd like to be contacted — together with a summary of the business context from your conversation, so we can follow up usefully.",
       "We may also collect basic technical information automatically, such as general usage data, to keep the site working and improve it.",
     ],
   },
   {
     h: "How we use your information",
     p: [
-      "We use your information to respond to your questions, to contact you about the free consultation you requested, to schedule and prepare for that call, and to improve our service.",
+      "We use your information to respond to your questions, to get back to you as you requested, to prepare for that conversation, and to improve our service.",
       "We use the business context from your conversation only to give you more relevant advice and to make your consultation useful.",
     ],
   },
@@ -68,10 +70,27 @@ const sections = [
   },
 ];
 
+// AEO: page-level schema + breadcrumbs, linked to the Organization entity.
+const thisPageSchema = pageSchema({
+  type: "WebPage",
+  path: "/privacy",
+  name: "Quicklai privacy policy",
+  description: metadata.description,
+});
+const crumbs = breadcrumbSchema([{ name: "Privacy", path: "/privacy" }]);
+
 export default function Privacy() {
   return (
     <main>
       <Nav />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(thisPageSchema)}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(crumbs)}
+      />
       <article className="max-w-[680px] mx-auto px-5 pt-16 pb-8">
         <h1 className="text-[40px] font-semibold text-gray-900 tracking-tight leading-tight mb-3">
           Privacy Policy

@@ -132,6 +132,27 @@ export default function BlogPost({ params }) {
           {post.lead}
         </p>
 
+        {/* Key takeaways — scannable summary. This is the format AI answer
+            engines lift most readily when citing a page. */}
+        {post.takeaways && post.takeaways.length > 0 && (
+          <div className="mb-10 bg-[#F5F5F7] rounded-2xl p-6">
+            <h2 className="text-[15px] font-semibold text-gray-900 mb-3">
+              Key takeaways
+            </h2>
+            <ul className="flex flex-col gap-2">
+              {post.takeaways.map((t, i) => (
+                <li
+                  key={i}
+                  className="text-[15px] text-gray-600 leading-relaxed flex gap-2.5"
+                >
+                  <span className="text-brand-blue flex-shrink-0">•</span>
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="flex flex-col gap-8">
           {post.body.map((section, i) => (
             <div key={i}>
@@ -170,8 +191,8 @@ export default function BlogPost({ params }) {
             Want to put AI to work in your business?
           </h2>
           <p className="text-[15px] text-gray-500 mb-5 max-w-[420px] mx-auto leading-relaxed">
-            A free 30-minute business mapping call turns these ideas into
-            specific AI tools Quicklai can build for you.
+            Leave your details and we'll get back to you about the specific
+            AI tools Quicklai could build for your business.
           </p>
           <BookCallButton source={`blog: ${post.title}`} />
         </div>

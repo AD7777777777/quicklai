@@ -54,7 +54,7 @@ export default function ChatWidget() {
       });
       const data = await res.json();
 
-      let reply = data.reply || "Something went wrong. Please try again.";
+      let reply = data.reply || data.error || "Something went wrong. Please try again.";
       const hasLead = reply.includes("[LEAD_CAPTURE]");
 
       // Extract the business field and the recommended AI tools the advisor
@@ -116,7 +116,7 @@ export default function ChatWidget() {
         role: "user",
         content: `(System note: The user submitted their contact details${
           firstName ? ` — first name ${firstName}` : ""
-        } to book the free call. A lead was captured. Thank them warmly, confirm someone will reach out to schedule, and offer to keep helping. Do not ask for details again.)`,
+        } so we can get back to them. A lead was captured. Thank them warmly, confirm someone will get back to them soon using the contact method they chose, and offer to keep helping. Do not ask for details again.)`,
       },
     ];
     setMessages(next);
