@@ -203,10 +203,10 @@ export default function ChatWidget() {
         {leadShown && !leadSubmitted && (
           <div className="bg-[#F5F5F7] rounded-2xl border border-gray-100 p-5">
             <h3 className="text-[16px] font-semibold text-gray-900 mb-1">
-              {LEAD_CAPTURE.heading}
+              {LEAD_CAPTURE.heading || "How should we get back to you?"}
             </h3>
             <p className="text-[13px] text-gray-500 mb-4 leading-snug">
-              {LEAD_CAPTURE.subtext}
+              {LEAD_CAPTURE.subtext || "Leave your details and pick how you'd like us to get back to you."}
             </p>
             <LeadForm
               compact

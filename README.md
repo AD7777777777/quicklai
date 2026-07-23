@@ -139,7 +139,7 @@ stage.
 
 ## Update — lead capture, privacy, and blog changes
 
-**Chat flow (new):** The advisor now asks 5–7+ leading questions to understand
+**Chat flow (new):** The advisor now asks 5–8 evolving questions to understand
 the business, gives one basic-but-useful piece of advice, then invites the user
 to a free 30-minute call by collecting their **name + phone** in-chat. It does
 not book the call — it captures a lead. The `[LEAD_CAPTURE]` marker in the AI
@@ -200,6 +200,15 @@ one place. The popup wrapper is `components/BookCallButton.jsx`.
 This site includes the following hardening:
 
 **HTTP security headers** (`next.config.js`) — Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, Strict-Transport-Security, Cross-Origin-Opener-Policy, Cross-Origin-Resource-Policy. Also disables the `X-Powered-By: Next.js` header.
+
+> **Dev vs. production CSP:** the Content-Security-Policy is intentionally
+> looser in `npm run dev` (adds `'unsafe-eval'` and WebSocket support) because
+> Next.js's Fast Refresh / hot-reload needs `eval()` and a live WebSocket
+> connection. Without this, the browser silently blocks them in dev, which
+> breaks **all** client-side interactivity (every button on the site) while
+> pages still render normally — a very easy trap to fall into and confusing
+> to debug, since nothing looks broken. Production automatically gets the
+> strict policy with neither, since the built app doesn't use eval().
 
 **Rate limiting** (`lib/rateLimit.js`) on both API routes:
 - `/api/chat` — 20 requests/minute per client (protects your paid Anthropic API from abuse)

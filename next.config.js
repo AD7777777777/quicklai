@@ -1,18 +1,29 @@
 /** @type {import('next').NextConfig} */
 
+const isDev = process.env.NODE_ENV === "development";
+
 // Content-Security-Policy: restricts where the browser will load or execute
-// resources from. script-src includes 'unsafe-inline' because Next.js's own
-// hydration bootstrap needs it — removing it can break the app with no easy
-// local way to catch it, so it's a deliberate, documented trade-off. The
-// JSON-LD schema blocks (type="application/ld+json") are inert data, not
-// executable script, so they aren't affected by script-src either way.
+// resources from.
+//
+// IMPORTANT: Next.js dev mode (`npm run dev`) uses eval() internally for Fast
+// Refresh / hot module reloading. Without 'unsafe-eval' in script-src, the
+// browser silently blocks that mechanism in dev — which breaks ALL client-side
+// interactivity (every onClick on the whole site) while the page still looks
+// and renders fine. That's a easy trap to fall into and hard to notice, so the
+// policy is intentionally looser in development and strict in production,
+// where eval() isn't used and the tighter policy applies safely.
+//
+// script-src also includes 'unsafe-inline' because Next.js's own hydration
+// bootstrap needs it. The JSON-LD schema blocks (type="application/ld+json")
+// are inert data, not executable script, so they aren't affected by script-src
+// either way.
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline';
+  script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""};
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: https:;
   font-src 'self' data:;
-  connect-src 'self';
+  connect-src 'self'${isDev ? " ws: wss:" : ""};
   frame-ancestors 'none';
   base-uri 'self';
   form-action 'self';

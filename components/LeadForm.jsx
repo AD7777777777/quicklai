@@ -77,10 +77,10 @@ export default function LeadForm({ onSaved, businessContext = "", recommendedToo
       {!compact && (
         <>
           <h3 className="text-[17px] font-semibold text-gray-900 mb-1">
-            {LEAD_CAPTURE.heading}
+            {LEAD_CAPTURE.heading || "How should we get back to you?"}
           </h3>
           <p className="text-[13px] text-gray-500 mb-3 leading-snug">
-            {LEAD_CAPTURE.subtext}
+            {LEAD_CAPTURE.subtext || "Leave your details and pick how you'd like us to get back to you."}
           </p>
         </>
       )}
@@ -116,7 +116,10 @@ export default function LeadForm({ onSaved, businessContext = "", recommendedToo
             How should we reach you? (pick any)
           </p>
           <div className="flex flex-wrap gap-2">
-            {LEAD_CAPTURE.contactMethods.map((m) => {
+            {/* Fallback array guards against a stale/incomplete config —
+                without this, a missing LEAD_CAPTURE.contactMethods value
+                would throw and silently break the entire popup on click. */}
+            {(LEAD_CAPTURE.contactMethods || ["Call", "WhatsApp", "Email"]).map((m) => {
               const active = methods.includes(m);
               return (
                 <button
