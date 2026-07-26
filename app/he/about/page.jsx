@@ -1,6 +1,7 @@
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import FAQ from "@/components/FAQ";
+import BookCallButton from "@/components/BookCallButton";
 import { pageSchema, breadcrumbSchema, jsonLd } from "@/lib/schema";
 
 export const metadata = {
@@ -62,6 +63,10 @@ export default function AboutHe() {
           </p>
         </div>
       </article>
+
+      <div className="text-center py-8">
+        <BookCallButton source="about page (he)" locale="he" />
+      </div>
 
       <FAQ items={aboutFaqs} locale="he" />
       <Footer locale="he" />

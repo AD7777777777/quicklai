@@ -1,6 +1,7 @@
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import FAQ from "@/components/FAQ";
+import BookCallButton from "@/components/BookCallButton";
 import { pageSchema, breadcrumbSchema, jsonLd } from "@/lib/schema";
 
 export const metadata = {
@@ -67,6 +68,11 @@ export default function About() {
           </p>
         </div>
       </article>
+
+      <div className="text-center py-8">
+        <BookCallButton source="about page" />
+      </div>
+
       <FAQ items={aboutFaqs} />
       <Footer />
     </main>

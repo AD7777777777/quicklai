@@ -30,9 +30,11 @@ export default function ChatWidget({ locale = "en" }) {
 
     const last = messages[messages.length - 1];
     if (last && last.role === "assistant" && lastMsgRef.current) {
-      // The newest answer is a direct child of the scroll container, so its
-      // offsetTop is measured from the container's content top. Scroll there
-      // (minus a small gap) so the answer starts at the top of the view.
+      // The newest answer is a direct child of the scroll container, and the
+      // container is position:relative (see className below), so offsetTop
+      // here is correctly measured from the container's own content top —
+      // not some other ancestor. Scroll there (minus a small gap) so the
+      // answer starts at the top of the view instead of landing mid-message.
       const node = lastMsgRef.current;
       container.scrollTop = Math.max(0, node.offsetTop - 8);
     } else {
@@ -142,7 +144,12 @@ export default function ChatWidget({ locale = "en" }) {
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="flex-1 py-6 flex flex-col gap-4 min-h-[380px] max-h-[380px] overflow-y-auto"
+        // "relative" is required here: without it, offsetTop on child
+        // messages (used below to scroll a new answer to the top) is
+        // measured against some other positioned ancestor up the page
+        // instead of this container, landing the scroll at an arbitrary
+        // point — the "jumps to the middle" bug.
+        className="relative flex-1 py-6 flex flex-col gap-4 min-h-[380px] max-h-[380px] overflow-y-auto"
       >
         {isEmpty ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-2 px-5 py-10 text-center">

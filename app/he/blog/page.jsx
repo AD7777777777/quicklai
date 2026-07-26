@@ -2,6 +2,7 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import FAQ from "@/components/FAQ";
+import BookCallButton from "@/components/BookCallButton";
 import { pageSchema, breadcrumbSchema, jsonLd } from "@/lib/schema";
 
 // PHASE 2 NOTE: Hebrew blog post translations aren't built yet. This page is
@@ -73,6 +74,10 @@ export default function BlogHe() {
           </Link>
         </div>
       </section>
+
+      <div className="text-center pb-8">
+        <BookCallButton source="blog index (he)" locale="he" />
+      </div>
 
       <FAQ items={blogFaqsHe} locale="he" />
 

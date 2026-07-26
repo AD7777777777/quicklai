@@ -3,6 +3,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import BlogList from "@/components/BlogList";
 import FAQ from "@/components/FAQ";
+import BookCallButton from "@/components/BookCallButton";
 import { BLOG_POSTS, BLOG_FAQS } from "@/lib/config";
 import { pageSchema, breadcrumbSchema, jsonLd } from "@/lib/schema";
 
@@ -63,6 +64,10 @@ export default function Blog() {
           </Link>
         ))}
       </nav>
+
+      <div className="text-center pb-8">
+        <BookCallButton source="blog index" />
+      </div>
 
       <FAQ items={BLOG_FAQS} />
 

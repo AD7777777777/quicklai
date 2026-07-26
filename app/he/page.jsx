@@ -2,6 +2,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import FAQ from "@/components/FAQ";
+import BookCallButton from "@/components/BookCallButton";
 import { HOME_FAQS, SITE } from "@/lib/content/he";
 
 export const metadata = {
@@ -42,9 +43,10 @@ export default function HomeHe() {
         <h2 className="text-[24px] font-semibold text-gray-900 tracking-tight mb-3">
           מה זה Quicklai?
         </h2>
-        <p className="text-[17px] text-gray-600 leading-relaxed">
+        <p className="text-[17px] text-gray-600 leading-relaxed mb-5">
           {SITE.definition}
         </p>
+        <BookCallButton source="homepage (he)" variant="inline" locale="he" />
       </section>
 
       <FAQ items={HOME_FAQS} locale="he" />
