@@ -228,3 +228,73 @@ This site includes the following hardening:
 - Move rate limiting to Vercel KV / Upstash Redis for a hard guarantee across all instances
 - Add a CAPTCHA (e.g. Cloudflare Turnstile) to the lead form if spam becomes a real problem
 - Consider Vercel's built-in Firewall / Attack Challenge Mode for additional DDoS protection
+
+---
+
+## Hebrew site (Phase 1 — core site)
+
+Quicklai now has a full Hebrew version at `/he/*`, alongside the existing
+English site at the root — Phase 1 covers the core site; blog post
+translations are Phase 2.
+
+**Architecture:**
+- English pages live in `app/(en)/` (a route group — invisible in the URL,
+  so all existing English URLs are unchanged: `/`, `/about`, `/services`, etc.)
+- Hebrew pages live in `app/he/` — a real URL segment, so Hebrew pages are at
+  `/he`, `/he/about`, `/he/services`, `/he/contact`, `/he/privacy`, `/he/blog`
+- Each has its own **independent root layout** (Next.js's "multiple root
+  layouts" pattern) — `app/(en)/layout.jsx` sets `<html lang="en" dir="ltr">`
+  and `app/he/layout.jsx` sets `<html lang="he" dir="rtl">`. The browser
+  handles right-to-left layout automatically from that one attribute.
+- `app/api/*`, `app/sitemap.js`, `app/robots.js`, `app/globals.css` stay at
+  the true root — they're locale-independent.
+
+**Content:**
+- `lib/content/en.js` — a thin re-export of the existing `lib/config.js`
+  (nothing about `lib/config.js` changed, so no risk to the English site)
+- `lib/content/he.js` — full Hebrew content: site metadata, a complete
+  Hebrew system prompt (the chat conducts the entire conversation in
+  Hebrew), starter questions, homepage FAQs, lead-capture text
+- `lib/content/ui.js` — short shared UI strings (button labels, placeholders,
+  nav labels) for both locales, used by every shared component
+- `lib/content/index.js` — `getContent(locale)` picks the right module
+
+**Components:** `Nav`, `Footer`, `FAQ`, `ChatWidget`, `LeadForm`,
+`BookCallButton`, `ContactForm`, and `BlogList` all accept a `locale` prop
+(default `"en"`, so nothing changes for existing English usage). A new
+`LocaleSwitcher` component (in `Nav`) links each page to its counterpart in
+the other language.
+
+**Chat in Hebrew:** `ChatWidget` sends `locale` to `/api/chat`, which selects
+the Hebrew or English system prompt server-side. The Hebrew advisor asks
+5–8 evolving questions and gives advice + AI tool recommendations entirely
+in Hebrew, exactly mirroring the English flow's structure and rules.
+
+**RTL:** most of the layout flips correctly for free, since it's built with
+flexbox alignment (`items-*`, `justify-*`) rather than fixed positioning —
+flexbox's start/end resolve based on `dir` automatically. Three spots used
+physical left/right and needed fixing to CSS **logical properties**
+(supported natively since Tailwind 3.4): the chat bubble tail corners
+(`rounded-ee-`/`rounded-es-` instead of `rounded-br-`/`rounded-bl-`) and the
+popup close button (`end-4` instead of `right-4`).
+
+**AEO for two languages:** every page has `hreflang` alternates linking it to
+its counterpart in the other language (`alternates.languages` in metadata),
+Hebrew pages are in the sitemap, and Hebrew page schema sets `inLanguage: "he"`
+while sharing the same Organization `@id` — one business, described in two
+languages, not two separate entities.
+
+**Leads:** the lead API and Google Sheet now record which language (`en`/`he`)
+each lead came from, so you know whether to follow up in Hebrew or English.
+
+### Important before launch
+- **Have a native Hebrew speaker review the translations**, especially the
+  Privacy Policy and the system prompt's tone — I can produce fluent, correct
+  Hebrew, but business/marketing nuance and how Hebrew speakers actually
+  phrase questions to AI (which affects Hebrew AEO) benefit from native review.
+- **Phase 2 (not yet built):** translating all 36 blog posts to Hebrew. The
+  `/he/blog` page is currently a real, honest placeholder explaining Hebrew
+  guides are coming, with a link back to the English blog — not a broken or
+  empty page.
+- **Re-deploy the Apps Script** — it now records a `locale` field per lead
+  (new "Language" column); re-paste and re-deploy as with previous updates.

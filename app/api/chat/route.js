@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { SYSTEM_PROMPT } from "@/lib/config";
+import { getContent } from "@/lib/content";
 import { rateLimit, getClientKey } from "@/lib/rateLimit";
 
 // This route runs ON THE SERVER. Your API key never reaches the browser.
@@ -34,7 +34,11 @@ export async function POST(request) {
       );
     }
 
-    const { messages } = await request.json();
+    const { messages, locale } = await request.json();
+
+    // Selects the Hebrew or English system prompt. Defaults to English for
+    // safety if an unexpected value is sent — never trust client input blindly.
+    const { SYSTEM_PROMPT } = getContent(locale === "he" ? "he" : "en");
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return Response.json({ error: "Invalid messages" }, { status: 400 });

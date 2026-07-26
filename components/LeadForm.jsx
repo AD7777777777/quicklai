@@ -2,20 +2,33 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LEAD_CAPTURE } from "@/lib/config";
+import { getContent } from "@/lib/content";
+import { getUI } from "@/lib/content/ui";
 
 // Shared lead-capture form. Used both inside the chat widget and inside the
 // marketing-page popup, so capture logic and consent live in exactly one place.
 //
 // Collects: name + phone (required), email (optional), and preferred contact
-// methods (multi-select: Call / WhatsApp / Email).
+// methods (multi-select).
 //
 // Props:
 //   onSaved(firstName)  — called after a successful (or gracefully failed) save
 //   businessContext     — optional business field/context to attach to the lead
 //   source              — where the lead came from (e.g. "chat", "services page")
 //   compact             — tighter spacing when embedded in the chat
-export default function LeadForm({ onSaved, businessContext = "", recommendedTools = "", source = "chat", compact = false }) {
+//   locale              — "en" | "he", selects UI text and consent copy
+export default function LeadForm({
+  onSaved,
+  businessContext = "",
+  recommendedTools = "",
+  source = "chat",
+  compact = false,
+  locale = "en",
+}) {
+  const { LEAD_CAPTURE } = getContent(locale);
+  const t = getUI(locale).leadForm;
+  const prefix = locale === "he" ? "/he" : "";
+
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -33,15 +46,15 @@ export default function LeadForm({ onSaved, businessContext = "", recommendedToo
   const submit = async () => {
     setError("");
     if (!name.trim() || !phone.trim()) {
-      setError("Please add your name and phone number.");
+      setError(t.errorRequired);
       return;
     }
     if (methods.length === 0) {
-      setError("Please pick at least one way for us to reach you.");
+      setError(t.errorMethod);
       return;
     }
     if (!consent) {
-      setError("Please agree to continue.");
+      setError(t.errorConsent);
       return;
     }
     setSaving(true);
@@ -62,6 +75,7 @@ export default function LeadForm({ onSaved, businessContext = "", recommendedToo
           businessContext,
           recommendedTools,
           source,
+          locale,
         }),
       });
     } catch {
@@ -77,10 +91,10 @@ export default function LeadForm({ onSaved, businessContext = "", recommendedToo
       {!compact && (
         <>
           <h3 className="text-[17px] font-semibold text-gray-900 mb-1">
-            {LEAD_CAPTURE.heading || "How should we get back to you?"}
+            {LEAD_CAPTURE.heading}
           </h3>
           <p className="text-[13px] text-gray-500 mb-3 leading-snug">
-            {LEAD_CAPTURE.subtext || "Leave your details and pick how you'd like us to get back to you."}
+            {LEAD_CAPTURE.subtext}
           </p>
         </>
       )}
@@ -90,7 +104,7 @@ export default function LeadForm({ onSaved, businessContext = "", recommendedToo
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Your name"
+          placeholder={t.namePlaceholder}
           className="border border-gray-200 rounded-lg px-3 py-2 text-[14px] outline-none focus:border-brand-blue bg-white"
         />
         <input
@@ -98,7 +112,7 @@ export default function LeadForm({ onSaved, businessContext = "", recommendedToo
           inputMode="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          placeholder="Phone number"
+          placeholder={t.phonePlaceholder}
           className="border border-gray-200 rounded-lg px-3 py-2 text-[14px] outline-none focus:border-brand-blue bg-white"
         />
         <input
@@ -106,15 +120,13 @@ export default function LeadForm({ onSaved, businessContext = "", recommendedToo
           inputMode="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email (optional)"
+          placeholder={t.emailPlaceholder}
           className="border border-gray-200 rounded-lg px-3 py-2 text-[14px] outline-none focus:border-brand-blue bg-white"
         />
 
         {/* Preferred contact methods — pick any that apply. */}
         <div>
-          <p className="text-[12px] text-gray-500 mb-1.5">
-            How should we reach you? (pick any)
-          </p>
+          <p className="text-[12px] text-gray-500 mb-1.5">{t.methodsLabel}</p>
           <div className="flex flex-wrap gap-2">
             {/* Fallback array guards against a stale/incomplete config —
                 without this, a missing LEAD_CAPTURE.contactMethods value
@@ -139,24 +151,28 @@ export default function LeadForm({ onSaved, businessContext = "", recommendedToo
           </div>
         </div>
 
-        {/* Single combined consent. The partner-sharing permission is included
-            in the wording here and described in full in the Privacy Policy. */}
-        <label className="flex items-start gap-2 text-[11px] text-gray-500 leading-snug cursor-pointer bg-gray-50 rounded-lg p-2.5">
-          <input
-            type="checkbox"
-            checked={consent}
-            onChange={(e) => setConsent(e.target.checked)}
-            className="mt-0.5 flex-shrink-0 accent-brand-blue"
-          />
-          <span>
-            I agree to Quicklai's{" "}
-            <Link href="/privacy" target="_blank" className="text-brand-blue underline">
-              Privacy Policy
-            </Link>
-            , to being contacted about a consultation, and that my details may be
-            shared with selected partners for relevant offers.
-          </span>
-        </label>
+        {/* Single combined consent. The Privacy Policy link sits directly
+            above the checkbox so it's clearly part of the same agreement —
+            kept as a separate line (rather than embedded mid-sentence) so
+            the consent text can translate cleanly for both locales. */}
+        <div className="bg-gray-50 rounded-lg p-2.5">
+          <Link
+            href={`${prefix}/privacy`}
+            target="_blank"
+            className="text-[11px] text-brand-blue underline"
+          >
+            {t.privacyLinkText}
+          </Link>
+          <label className="flex items-start gap-2 text-[11px] text-gray-500 leading-snug cursor-pointer mt-1.5">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              className="mt-0.5 flex-shrink-0 accent-brand-blue"
+            />
+            <span>{t.consent}</span>
+          </label>
+        </div>
 
         {error && <p className="text-[12px] text-red-500">{error}</p>}
 
@@ -165,7 +181,7 @@ export default function LeadForm({ onSaved, businessContext = "", recommendedToo
           disabled={saving}
           className="bg-brand-blue hover:bg-brand-bluehover disabled:opacity-60 text-white rounded-full px-6 py-2 text-[14px] font-medium transition-colors"
         >
-          {saving ? "Sending…" : "Send my details"}
+          {saving ? t.submitting : t.submit}
         </button>
       </div>
     </div>

@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { SITE, STARTER_QUESTIONS, LEAD_CAPTURE } from "@/lib/config";
+import { getContent } from "@/lib/content";
+import { getUI } from "@/lib/content/ui";
 import LeadForm from "@/components/LeadForm";
 
-export default function ChatWidget() {
+export default function ChatWidget({ locale = "en" }) {
+  const { SITE, STARTER_QUESTIONS, LEAD_CAPTURE } = getContent(locale);
+  const t = getUI(locale).chat;
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,15 +46,15 @@ export default function ChatWidget() {
     el.style.height = Math.min(el.scrollHeight, 120) + "px";
   };
 
-  // Sends a turn to the API. `systemNote` lets us tell the model a lead was
-  // just captured, without showing that note as a user bubble.
+  // Sends a turn to the API. Passes `locale` so the server picks the right
+  // system prompt (English or Hebrew) for this conversation.
   const sendToApi = async (nextMessages) => {
     setLoading(true);
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: nextMessages }),
+        body: JSON.stringify({ messages: nextMessages, locale }),
       });
       const data = await res.json();
 
@@ -144,10 +148,10 @@ export default function ChatWidget() {
           <div className="flex-1 flex flex-col items-center justify-center gap-2 px-5 py-10 text-center">
             <div className="text-3xl mb-1">💼</div>
             <h2 className="text-[17px] font-medium text-gray-900">
-              Need a business advice?
+              {t.empty}
             </h2>
             <p className="text-[14px] text-gray-500 max-w-[320px] leading-relaxed">
-              Ask me anything about growing, managing, or marketing your business with AI.
+              {t.emptySub}
             </p>
             <div className="flex flex-wrap gap-2 justify-center mt-2">
               {STARTER_QUESTIONS.map((q) => (
@@ -178,8 +182,10 @@ export default function ChatWidget() {
                 <div
                   className={`max-w-[82%] px-[15px] py-[11px] rounded-[18px] text-[15px] leading-normal whitespace-pre-wrap ${
                     m.role === "user"
-                      ? "bg-brand-blue text-white rounded-br-[4px]"
-                      : "bg-gray-50 text-gray-900 rounded-bl-[4px]"
+                      ? // Logical corner (end-end) instead of physical
+                        // bottom-right, so the tail mirrors correctly in RTL.
+                        "bg-brand-blue text-white rounded-ee-[4px]"
+                      : "bg-gray-50 text-gray-900 rounded-es-[4px]"
                   }`}
                 >
                   {m.content}
@@ -191,7 +197,7 @@ export default function ChatWidget() {
 
         {loading && (
           <div className="flex items-start">
-            <div className="flex items-center gap-1.5 px-4 py-[13px] bg-gray-50 rounded-[18px] rounded-bl-[4px]">
+            <div className="flex items-center gap-1.5 px-4 py-[13px] bg-gray-50 rounded-[18px] rounded-es-[4px]">
               <span className="w-[7px] h-[7px] rounded-full bg-gray-400 animate-bounce [animation-delay:0ms]" />
               <span className="w-[7px] h-[7px] rounded-full bg-gray-400 animate-bounce [animation-delay:200ms]" />
               <span className="w-[7px] h-[7px] rounded-full bg-gray-400 animate-bounce [animation-delay:400ms]" />
@@ -203,13 +209,14 @@ export default function ChatWidget() {
         {leadShown && !leadSubmitted && (
           <div className="bg-[#F5F5F7] rounded-2xl border border-gray-100 p-5">
             <h3 className="text-[16px] font-semibold text-gray-900 mb-1">
-              {LEAD_CAPTURE.heading || "How should we get back to you?"}
+              {LEAD_CAPTURE.heading}
             </h3>
             <p className="text-[13px] text-gray-500 mb-4 leading-snug">
-              {LEAD_CAPTURE.subtext || "Leave your details and pick how you'd like us to get back to you."}
+              {LEAD_CAPTURE.subtext}
             </p>
             <LeadForm
               compact
+              locale={locale}
               source="chat"
               businessContext={businessField}
               recommendedTools={
@@ -246,7 +253,7 @@ export default function ChatWidget() {
             autoResize(e.target);
           }}
           onKeyDown={handleKey}
-          placeholder="Ask a business question…"
+          placeholder={t.inputPlaceholder}
           rows={1}
           className="flex-1 border border-gray-200 rounded-[22px] px-4 py-2.5 text-[15px] resize-none outline-none focus:border-brand-blue text-gray-900 min-h-[44px] max-h-[120px] leading-snug"
         />

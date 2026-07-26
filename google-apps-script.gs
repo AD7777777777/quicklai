@@ -30,6 +30,7 @@ function doPost(e) {
         "Marketing Opt-In",
         "Business Field",
         "Recommended AI Tools",
+        "Language",
       ]);
     }
 
@@ -51,6 +52,7 @@ function doPost(e) {
       data.marketingOptIn ? "Yes" : "No",
       data.businessContext || "",
       data.recommendedTools || "",
+      data.locale || "en",
     ]);
 
     lock.releaseLock();

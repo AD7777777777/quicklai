@@ -2,19 +2,24 @@
 
 import { useState, useEffect } from "react";
 import LeadForm from "@/components/LeadForm";
+import { getUI } from "@/lib/content/ui";
 
 // A button that opens a simple popup with the lead-capture form.
-// Drop-in replacement for the old Calendly link on marketing pages.
 //
 // Props:
-//   label   — button text (default "Get in touch →")
+//   label   — button text (defaults to the localized "Get in touch")
 //   source  — where the lead came from, for your records
 //   variant — "solid" (filled blue) or "inline" (subtle)
+//   locale  — "en" | "he"
 export default function BookCallButton({
-  label = "Get in touch →",
+  label,
   source = "marketing page",
   variant = "solid",
+  locale = "en",
 }) {
+  const t = getUI(locale).bookCall;
+  const buttonLabel = label || t.defaultLabel;
+
   const [open, setOpen] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -52,7 +57,7 @@ export default function BookCallButton({
   return (
     <>
       <button onClick={() => setOpen(true)} className={btnClass}>
-        {label}
+        {buttonLabel}
       </button>
 
       {open && (
@@ -72,8 +77,10 @@ export default function BookCallButton({
           <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-[360px] max-h-[90vh] overflow-y-auto p-5">
             <button
               onClick={close}
-              aria-label="Close"
-              className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-colors"
+              aria-label={t.close}
+              // Logical inset (end-4) instead of physical right-4, so this
+              // mirrors to the top-left correctly under dir="rtl".
+              className="absolute top-4 end-4 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-colors"
             >
               <svg
                 className="w-4 h-4"
@@ -92,21 +99,20 @@ export default function BookCallButton({
               <div className="text-center py-6">
                 <div className="text-3xl mb-3">✓</div>
                 <h3 className="text-[20px] font-semibold text-gray-900 mb-2">
-                  You're all set.
+                  {t.savedTitle}
                 </h3>
                 <p className="text-[15px] text-gray-500 leading-relaxed mb-6">
-                  Thanks — we'll get back to you shortly using the contact
-                  method you chose. It's free and there's no obligation.
+                  {t.savedBody}
                 </p>
                 <button
                   onClick={close}
                   className="bg-brand-blue hover:bg-brand-bluehover text-white rounded-full px-6 py-2.5 text-[15px] font-medium transition-colors"
                 >
-                  Done
+                  {t.done}
                 </button>
               </div>
             ) : (
-              <LeadForm source={source} onSaved={() => setSaved(true)} />
+              <LeadForm source={source} locale={locale} onSaved={() => setSaved(true)} />
             )}
           </div>
         </div>

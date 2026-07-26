@@ -44,6 +44,7 @@ export async function POST(request) {
       businessContext,
       recommendedTools,
       source,
+      locale,
     } = body;
 
     // Consent to the privacy policy is required to store a lead at all.
@@ -70,6 +71,7 @@ export async function POST(request) {
       businessContext: String(businessContext || "").slice(0, 5000),
       recommendedTools: String(recommendedTools || "").slice(0, 1000),
       source: String(source || "unknown").slice(0, 100),
+      locale: locale === "he" ? "he" : "en",
       createdAt: new Date().toISOString(),
     };
 
