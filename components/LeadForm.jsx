@@ -110,9 +110,13 @@ export default function LeadForm({
         <input
           type="tel"
           inputMode="tel"
+          dir="ltr"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder={t.phonePlaceholder}
+          // Phone numbers should always read left-to-right — even on a
+          // Hebrew (RTL) page — so digits type and display in the correct
+          // order. dir="ltr" is a no-op on the English form (already LTR).
           className="border border-gray-200 rounded-lg px-3 py-2 text-[14px] outline-none focus:border-brand-blue bg-white"
         />
         <input

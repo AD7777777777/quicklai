@@ -292,9 +292,21 @@ each lead came from, so you know whether to follow up in Hebrew or English.
   Privacy Policy and the system prompt's tone — I can produce fluent, correct
   Hebrew, but business/marketing nuance and how Hebrew speakers actually
   phrase questions to AI (which affects Hebrew AEO) benefit from native review.
-- **Phase 2 (not yet built):** translating all 36 blog posts to Hebrew. The
-  `/he/blog` page is currently a real, honest placeholder explaining Hebrew
-  guides are coming, with a link back to the English blog — not a broken or
-  empty page.
+- **Phase 2 complete: the Hebrew blog is live.** All 36 posts, approved and
+  wired in:
+  - `lib/content/he-posts.js` — full post content (`POST_CONTENT_HE`), mirrors
+    `lib/posts.js` exactly (title, date, updated, description, lead,
+    takeaways, body, faqs)
+  - `lib/content/he-blog-meta.js` — blog index metadata (`BLOG_POSTS_HE`),
+    mirrors `BLOG_POSTS` in `lib/config.js`
+  - `app/he/blog/page.jsx` — the real paginated post list (7-per-page, same
+    `< 1–7 >` pattern as English), replacing the earlier placeholder
+  - `app/he/blog/[slug]/page.jsx` — individual Hebrew post pages, mirroring
+    `app/(en)/blog/[slug]/page.jsx` (same schema, takeaways, FAQ, CTA pattern)
+
+  Hebrew and English posts share the same slugs, so every post now has a real
+  `hreflang` pairing to its counterpart in the other language (updated in both
+  `app/(en)/blog/[slug]/page.jsx` and the Hebrew version), and all 36 Hebrew
+  post URLs are in `app/sitemap.js`.
 - **Re-deploy the Apps Script** — it now records a `locale` field per lead
   (new "Language" column); re-paste and re-deploy as with previous updates.

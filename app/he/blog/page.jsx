@@ -1,14 +1,11 @@
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import BlogList from "@/components/BlogList";
 import FAQ from "@/components/FAQ";
 import BookCallButton from "@/components/BookCallButton";
+import { BLOG_POSTS_HE } from "@/lib/content/he-blog-meta";
 import { pageSchema, breadcrumbSchema, jsonLd } from "@/lib/schema";
-
-// PHASE 2 NOTE: Hebrew blog post translations aren't built yet. This page is
-// a real, honest placeholder rather than an empty or broken page — once the
-// 36 posts are translated (see lib/content/he-posts.js, to be created), this
-// page swaps to a <BlogList> the same way the English blog index works.
 
 export const metadata = {
   alternates: {
@@ -17,17 +14,17 @@ export const metadata = {
   },
   title: "בלוג",
   description:
-    "מדריכים מעשיים על שימוש ב-AI לניהול ולשיווק עסק קטן — שירות לקוחות, מעקב אחרי לידים, שיווק, אוטומציה וצמיחה.",
+    "מדריכים מעשיים על שימוש ב‎AI‎ לניהול ולשיווק עסק קטן — שירות לקוחות, מעקב אחרי לידים, שיווק, אוטומציה וצמיחה.",
 };
 
 const blogFaqsHe = [
   {
     q: "מה יש בבלוג של Quicklai?",
-    a: "תשובות מעשיות על שימוש ב-AI בעסק קטן או בינוני — שירות לקוחות, מעקב אחרי לידים, שיווק, תוכן, אוטומציה ותפעול יומיומי. בקרוב גם בעברית.",
+    a: "תשובות מעשיות על שימוש ב‎AI‎ בעסק קטן או בינוני — שירות לקוחות, מעקב אחרי לידים, שיווק, תוכן, אוטומציה ותפעול יומיומי.",
   },
   {
-    q: "האם Quicklai יכולה לבנות את כלי ה-AI המתוארים בבלוג?",
-    a: "כן. Quicklai בונה פתרונות AI מותאמים אישית, סוכני AI וכלי אוטומציה לעסקים קטנים ובינוניים. השאירו פרטים ואנחנו נחזור אליכם כדי לדבר על מה שיתאים לעסק שלכם.",
+    q: "האם Quicklai יכולה לבנות את כלי הבינה המלאכותית המתוארים בבלוג?",
+    a: "כן. Quicklai בונה פתרונות ‎AI‎ מותאמים אישית, סוכני ‎AI‎ וכלי אוטומציה לעסקים קטנים ובינוניים. השאירו פרטים ואנחנו נחזור אליכם כדי לדבר על מה שיתאים לעסק שלכם.",
   },
 ];
 
@@ -52,28 +49,25 @@ export default function BlogHe() {
           תשובות לבעלי עסקים.
         </h1>
         <p className="text-[19px] text-gray-500 leading-relaxed">
-          תשובות ישירות על שימוש ב-AI לניהול ולשיווק העסק שלכם.
+          תשובות ישירות על שימוש ב‎AI‎ לניהול ולשיווק העסק שלכם.
         </p>
       </section>
 
+      {/* Paginated list: 7 posts per page with < 1–7 > controls (arrow
+          direction auto-mirrors for RTL inside BlogList). */}
       <section className="max-w-[680px] mx-auto px-5 pb-16">
-        <div className="bg-[#F5F5F7] rounded-2xl p-8 text-center">
-          <h2 className="text-[20px] font-semibold text-gray-900 mb-2">
-            המדריכים בעברית בדרך.
-          </h2>
-          <p className="text-[15px] text-gray-500 leading-relaxed mb-4">
-            אנחנו עובדים על תרגום כל המדריכים לעברית. בינתיים, אפשר לעיין
-            בבלוג באנגלית, או לשוחח עם היועץ הדיגיטלי שלנו בעברית ולקבל תשובה
-            מיידית לשאלה שלכם.
-          </p>
-          <Link
-            href="/blog"
-            className="inline-block text-brand-blue underline text-[15px] font-medium"
-          >
-            למעבר לבלוג באנגלית ←
-          </Link>
-        </div>
+        <BlogList posts={BLOG_POSTS_HE} locale="he" />
       </section>
+
+      {/* AEO: hidden crawlable links to every post — same pattern as the
+          English blog index. */}
+      <nav aria-hidden="true" className="sr-only">
+        {BLOG_POSTS_HE.map((post) => (
+          <Link key={post.slug} href={`/he/blog/${post.slug}`}>
+            {post.title}
+          </Link>
+        ))}
+      </nav>
 
       <div className="text-center pb-8">
         <BookCallButton source="blog index (he)" locale="he" />

@@ -11,13 +11,13 @@ export const metadata = {
   },
   title: "צור קשר",
   description:
-    "צרו קשר עם Quicklai — השאירו פרטים ואנחנו נחזור אליכם בנוגע לפתרונות AI לעסק הקטן או הבינוני שלכם.",
+    "צרו קשר עם ‎Quicklai‎ — השאירו פרטים ואנחנו נחזור אליכם בנוגע לפתרונות ‎AI‎ לעסק הקטן או הבינוני שלכם.",
 };
 
 const thisPageSchema = pageSchema({
   type: "ContactPage",
   path: "/he/contact",
-  name: "צור קשר עם Quicklai",
+  name: "צור קשר עם ‎Quicklai‎",
   description: metadata.description,
   inLanguage: "he",
 });
