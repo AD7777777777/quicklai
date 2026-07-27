@@ -10,6 +10,9 @@ module.exports = {
         brand: {
           blue: "#0071E3",
           bluehover: "#0077ED",
+          // Sparing accent color — used only in small, specific spots (like
+          // highlight bullets) so it never competes with the primary blue CTAs.
+          amber: "#F59E0B",
         },
       },
       fontFamily: {

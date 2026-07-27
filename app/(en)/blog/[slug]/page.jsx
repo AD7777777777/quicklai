@@ -150,7 +150,7 @@ export default function BlogPost({ params }) {
                   key={i}
                   className="text-[15px] text-gray-600 leading-relaxed flex gap-2.5"
                 >
-                  <span className="text-brand-blue flex-shrink-0">•</span>
+                  <span className="text-brand-amber flex-shrink-0">•</span>
                   <span>{t}</span>
                 </li>
               ))}

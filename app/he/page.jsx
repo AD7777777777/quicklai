@@ -23,11 +23,11 @@ export default function HomeHe() {
 
       <section className="max-w-[980px] mx-auto px-5 pt-16 pb-6 text-center">
         <h1 className="text-[40px] sm:text-[48px] font-semibold text-gray-900 tracking-tight leading-tight">
-          שוחחו עם היועץ שלכם לפתרונות AI.
+          שוחחו עם היועץ שלכם לפתרונות ‎AI‎.
         </h1>
         <p className="text-[19px] text-gray-500 mt-3 max-w-[560px] mx-auto leading-relaxed">
-          ייעוץ מותאם אישית וכלי AI ליישום שלו — לניהול ושיווק חכמים יותר.
-          שאלו כל דבר כדי להתחיל.
+          ייעוץ מותאם אישית, וכלי ‎AI‎ שהופכים אותו למעשי — לניהול ושיווק
+          חכמים יותר לעסק שלכם. שאלו כל שאלה כדי להתחיל.
         </p>
       </section>
 
