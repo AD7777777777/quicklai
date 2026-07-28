@@ -19,7 +19,7 @@ about 10 minutes.
 3. Open the file **`google-apps-script.gs`** from this project, copy all of it,
    and paste it into the Apps Script editor.
 4. **Set your notification email:** near the top of the script, change
-   `var NOTIFY_EMAIL = "you@example.com";` to the address where you want to be
+   `var NOTIFY_EMAIL = "";` to the address where you want to be
    emailed on every lead. (Leave it as-is to skip email notifications.)
 5. Click the **Save** icon (💾).
 
@@ -57,9 +57,30 @@ Then restart `npm run dev`.
 
 ## Step 5 — Test it
 
-1. Run the site, use the chat until it asks for your details (or click "Book your
-   free call" on a marketing page), and submit a test name + phone.
+1. Run the site, use the chat until it asks for your details (or click "Get in
+   touch" on a marketing page), and submit a test name, phone, **and email**.
 2. Check your Google Sheet — a new row should appear within a second or two.
+3. Check the inbox you used for the test — you should get a confirmation
+   email (English or Hebrew, matching whichever version of the site you
+   tested). This only sends if an email was provided; leads who skip the
+   optional email field won't get one, which is expected.
+
+---
+
+## Lead confirmation emails
+
+Since email is optional on the form, leads only get a confirmation if they
+provided one. It's automatic — no extra setup beyond what's above — and the
+language matches the site version they used (English or Hebrew). You (the
+business owner) still get the separate internal notification either way.
+
+To test both emails at once without waiting for a real submission, open the
+Apps Script editor, set `TEST_CONFIRMATION_EMAIL` near the bottom of the
+script to an inbox you can check, then run `runEmailTest` from the function
+dropdown — it sends the internal notification plus one confirmation email, in
+whichever language `TEST_LOCALE` is set to (`"en"` or `"he"`) — mirroring
+exactly what happens on a real submission: one form, one confirmation, in
+the language that visitor used.
 
 ---
 
@@ -80,3 +101,11 @@ The URL stays the same.
   and re-deployed. Check your spam folder, and check the Apps Script
   **Executions** log. Note Gmail's daily send limit (roughly 100 emails/day on
   free accounts) — fine for normal lead volume.
+- **Lead didn't get a confirmation email:** confirm they actually entered an
+  email (it's optional — no email means no confirmation, by design). Check
+  their spam folder, and confirm the email they entered looks valid.
+- **Some emails arrive but not others, with no error shown:** run
+  `runEmailTest` and read the log line for each individual email (it logs
+  "sent OK" or "FAILED: ..." separately for the notification and each
+  confirmation) — this pinpoints exactly which one is failing and why,
+  instead of one silent failure hiding the rest.

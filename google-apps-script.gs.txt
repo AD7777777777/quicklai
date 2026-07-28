@@ -183,37 +183,33 @@ function sendLeadConfirmationEmail(data) {
 
 // Run this to check your email setup end to end. Select "runEmailTest" in the
 // function dropdown, click Run, then approve permissions if prompted.
-// Sends the internal notification (to NOTIFY_EMAIL) plus ONE confirmation
-// email to TEST_CONFIRMATION_EMAIL, in whichever language TEST_LOCALE is set
-// to — this mirrors real production behavior exactly: one form submission,
-// one confirmation, in the language that visitor actually used.
-var TEST_CONFIRMATION_EMAIL = "test@example.com";
-var TEST_LOCALE = "en"; // set to "he" to test the Hebrew confirmation instead
+// Tests BOTH emails: the internal notification (to NOTIFY_EMAIL) and the
+// lead's own confirmation email (sent to the fake lead's test address —
+// change TEST_CONFIRMATION_EMAIL below to an inbox you can actually check).
+var TEST_CONFIRMATION_EMAIL = "ayaldolev@gmail.com";
 
 function runEmailTest() {
   Logger.log("NOTIFY_EMAIL is: " + NOTIFY_EMAIL);
-  Logger.log("TEST_LOCALE is: " + TEST_LOCALE);
   Logger.log("Remaining daily email quota: " + MailApp.getRemainingDailyQuota());
 
-  var isHebrew = TEST_LOCALE === "he";
   var fakeLead = {
-    name: isHebrew ? "בדיקה" : "Test Lead",
+    name: "Test Lead",
     phone: "0501234567",
     email: TEST_CONFIRMATION_EMAIL,
-    contactMethods: isHebrew ? "טלפון, וואטסאפ" : "Call, WhatsApp",
+    contactMethods: "Call, WhatsApp",
     source: "manual test",
     businessContext: "bakery / food retail",
     recommendedTools: "AI agent for after-hours enquiries; automated lead follow-up",
     consent: true,
     marketingOptIn: true,
-    locale: TEST_LOCALE,
+    locale: "en",
     createdAt: new Date().toISOString(),
   };
 
   // Internal notification to you. Each call is wrapped separately — if one
   // fails, you'll see the real error logged AND the rest still run, instead
   // of execution silently stopping (which is what made a real bug in
-  // sendLeadEmail look like the confirmation email just wasn't sending).
+  // sendLeadEmail look like the confirmation emails just weren't sending).
   try {
     sendLeadEmail(fakeLead);
     Logger.log("sendLeadEmail: sent OK to " + NOTIFY_EMAIL);
@@ -223,9 +219,20 @@ function runEmailTest() {
 
   try {
     sendLeadConfirmationEmail(fakeLead);
-    Logger.log("sendLeadConfirmationEmail (" + TEST_LOCALE + "): sent OK to " + TEST_CONFIRMATION_EMAIL);
+    Logger.log("sendLeadConfirmationEmail (en): sent OK to " + TEST_CONFIRMATION_EMAIL);
   } catch (err) {
-    Logger.log("sendLeadConfirmationEmail (" + TEST_LOCALE + ") FAILED: " + err);
+    Logger.log("sendLeadConfirmationEmail (en) FAILED: " + err);
+  }
+
+  try {
+    sendLeadConfirmationEmail(Object.assign({}, fakeLead, {
+      locale: "he",
+      name: "בדיקה",
+      contactMethods: "טלפון, וואטסאפ",
+    }));
+    Logger.log("sendLeadConfirmationEmail (he): sent OK to " + TEST_CONFIRMATION_EMAIL);
+  } catch (err) {
+    Logger.log("sendLeadConfirmationEmail (he) FAILED: " + err);
   }
 
   Logger.log("runEmailTest finished — check NOTIFY_EMAIL and " + TEST_CONFIRMATION_EMAIL + " (and spam folders).");
