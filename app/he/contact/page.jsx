@@ -1,7 +1,6 @@
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import ContactForm from "@/components/ContactForm";
-import BookCallButton from "@/components/BookCallButton";
+import InlineLeadForm from "@/components/InlineLeadForm";
 import { pageSchema, breadcrumbSchema, jsonLd } from "@/lib/schema";
 
 export const metadata = {
@@ -30,7 +29,7 @@ export default function ContactHe() {
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(thisPageSchema)} />
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(crumbs)} />
 
-      <section className="max-w-[560px] mx-auto px-5 pt-16 pb-8 text-center">
+      <section className="max-w-[560px] mx-auto px-5 pt-16 pb-4 text-center">
         <h1 className="text-[40px] font-semibold text-gray-900 tracking-tight leading-tight mb-3">
           בואו נדבר.
         </h1>
@@ -38,12 +37,9 @@ export default function ContactHe() {
           השאירו פרטים ואנחנו נחזור אליכם בדרך שהכי נוחה לכם — טלפון, וואטסאפ
           או אימייל. זה בחינם וללא שום התחייבות.
         </p>
-        <div className="mt-6">
-          <BookCallButton source="contact page (he)" locale="he" />
-        </div>
       </section>
 
-      <ContactForm locale="he" />
+      <InlineLeadForm locale="he" source="contact page (he)" />
 
       <Footer locale="he" />
     </main>
