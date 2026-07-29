@@ -34,7 +34,7 @@ export default function Contact() {
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(crumbs)}
       />
-      <section className="max-w-[560px] mx-auto px-5 pt-16 pb-4 text-center">
+      <section className="max-w-[560px] mx-auto px-5 pt-16 pb-4 text-center bg-white">
         <h1 className="text-[40px] font-semibold text-gray-900 tracking-tight leading-tight mb-3">
           Let's talk.
         </h1>

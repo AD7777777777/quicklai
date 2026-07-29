@@ -1,5 +1,6 @@
 import "../globals.css";
 import { SITE } from "@/lib/config";
+import BackgroundLine from "@/components/BackgroundLine";
 
 export const metadata = {
   metadataBase: new URL(SITE.url),
@@ -66,7 +67,10 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans relative">
+        <BackgroundLine />
+        {children}
+      </body>
     </html>
   );
 }

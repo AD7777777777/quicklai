@@ -29,7 +29,7 @@ export default function BlogList({ posts, locale = "en" }) {
 
   return (
     <div>
-      <div className="rounded-2xl border border-gray-100 divide-y divide-gray-100 px-5">
+      <div className="rounded-2xl border border-gray-100 divide-y divide-gray-100 px-5 bg-white">
         {visible.map((post) => (
           <article key={post.slug} className="py-6">
             <p className="text-[12px] text-gray-400 mb-1">

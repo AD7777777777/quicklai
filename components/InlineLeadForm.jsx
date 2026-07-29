@@ -29,7 +29,7 @@ export default function InlineLeadForm({ locale = "en", source = "contact page" 
   }
 
   return (
-    <div className="max-w-[480px] mx-auto px-5 py-10">
+    <div className="max-w-[480px] mx-auto px-5 py-10 bg-white">
       <LeadForm locale={locale} source={source} onSaved={() => setSaved(true)} />
     </div>
   );

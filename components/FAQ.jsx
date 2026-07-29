@@ -19,7 +19,7 @@ export default function FAQ({ items, locale = "en" }) {
   };
 
   return (
-    <section className="max-w-[680px] mx-auto px-5 py-16">
+    <section className="max-w-[680px] mx-auto px-5 py-16 bg-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}

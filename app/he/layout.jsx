@@ -1,5 +1,6 @@
 import "../globals.css";
 import { SITE } from "@/lib/content/he";
+import BackgroundLine from "@/components/BackgroundLine";
 
 // This is an independent ROOT layout (Next.js "multiple root layouts"
 // pattern) — it sets its own <html lang="he" dir="rtl"> completely
@@ -72,7 +73,10 @@ export default function HebrewRootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans relative">
+        <BackgroundLine locale="he" />
+        {children}
+      </body>
     </html>
   );
 }

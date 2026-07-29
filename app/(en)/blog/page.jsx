@@ -38,7 +38,7 @@ export default function Blog() {
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(crumbs)}
       />
-      <section className="max-w-[680px] mx-auto px-5 pt-16 pb-8">
+      <section className="max-w-[680px] mx-auto px-5 pt-16 pb-8 bg-white">
         <h1 className="text-[40px] font-semibold text-gray-900 tracking-tight leading-tight mb-3">
           Answers for business owners.
         </h1>

@@ -21,7 +21,7 @@ export default function HomeHe() {
     <main>
       <Nav locale="he" />
 
-      <section className="max-w-[980px] mx-auto px-5 pt-16 pb-6 text-center">
+      <section className="max-w-[980px] mx-auto px-5 pt-16 pb-6 text-center bg-white">
         <h1 className="text-[40px] sm:text-[48px] font-semibold text-gray-900 tracking-tight leading-tight">
           שוחחו עם היועץ שלכם לפתרונות ‎AI‎.
         </h1>
@@ -39,7 +39,7 @@ export default function HomeHe() {
 
       {/* Answer-first definition block — same AEO purpose as the English
           version, giving engines a clean, quotable "What is Quicklai?". */}
-      <section className="max-w-[680px] mx-auto px-5 py-12 text-center">
+      <section className="max-w-[680px] mx-auto px-5 py-12 text-center bg-white">
         <h2 className="text-[24px] font-semibold text-gray-900 tracking-tight mb-3">
           מה זה Quicklai?
         </h2>

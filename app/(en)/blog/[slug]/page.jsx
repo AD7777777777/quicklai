@@ -104,7 +104,7 @@ export default function BlogPost({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
-      <article className="max-w-[680px] mx-auto px-5 pt-16 pb-8">
+      <article className="max-w-[680px] mx-auto px-5 pt-16 pb-8 bg-white">
         <Link
           href="/blog"
           className="text-[13px] text-gray-400 hover:text-gray-600 transition-colors"

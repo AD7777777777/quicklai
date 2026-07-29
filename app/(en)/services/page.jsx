@@ -88,7 +88,7 @@ export default function Services() {
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(servicesSchema)}
       />
-      <section className="max-w-[980px] mx-auto px-5 pt-16 pb-6 text-center">
+      <section className="max-w-[980px] mx-auto px-5 pt-16 pb-6 text-center bg-white">
         <h1 className="text-[40px] font-semibold text-gray-900 tracking-tight leading-tight mb-3">
           How Quicklai helps.
         </h1>

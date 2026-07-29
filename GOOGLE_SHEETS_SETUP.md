@@ -60,10 +60,12 @@ Then restart `npm run dev`.
 1. Run the site, use the chat until it asks for your details (or click "Get in
    touch" on a marketing page), and submit a test name, phone, **and email**.
 2. Check your Google Sheet — a new row should appear within a second or two.
-3. Check the inbox you used for the test — you should get a confirmation
-   email (English or Hebrew, matching whichever version of the site you
-   tested). This only sends if an email was provided; leads who skip the
-   optional email field won't get one, which is expected.
+3. Check the inbox you set as `NOTIFY_EMAIL` — you should get the internal
+   notification.
+4. Check the email you tested with — you should get a confirmation email
+   (English or Hebrew, matching whichever version of the site you tested).
+   This only sends if an email was provided; leads who skip the optional
+   email field won't get one, which is expected.
 
 ---
 
@@ -78,9 +80,7 @@ To test both emails at once without waiting for a real submission, open the
 Apps Script editor, set `TEST_CONFIRMATION_EMAIL` near the bottom of the
 script to an inbox you can check, then run `runEmailTest` from the function
 dropdown — it sends the internal notification plus one confirmation email, in
-whichever language `TEST_LOCALE` is set to (`"en"` or `"he"`) — mirroring
-exactly what happens on a real submission: one form, one confirmation, in
-the language that visitor used.
+whichever language `TEST_LOCALE` is set to (`"en"` or `"he"`).
 
 ---
 
@@ -103,9 +103,14 @@ The URL stays the same.
   free accounts) — fine for normal lead volume.
 - **Lead didn't get a confirmation email:** confirm they actually entered an
   email (it's optional — no email means no confirmation, by design). Check
-  their spam folder, and confirm the email they entered looks valid.
+  their spam folder, and confirm the email they entered looks valid. Also
+  worth knowing: if a domain's outbound email authentication (SPF/DKIM/DMARC)
+  isn't fully set up, Google can accept the send request but the receiving
+  provider silently drops it — Apps Script has no visibility into that, so
+  check your domain's email authentication status in Google Admin if
+  confirmations aren't arriving despite no errors.
 - **Some emails arrive but not others, with no error shown:** run
   `runEmailTest` and read the log line for each individual email (it logs
-  "sent OK" or "FAILED: ..." separately for the notification and each
+  "sent OK" or "FAILED: ..." separately for the notification and the
   confirmation) — this pinpoints exactly which one is failing and why,
   instead of one silent failure hiding the rest.

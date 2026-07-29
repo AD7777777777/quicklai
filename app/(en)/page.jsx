@@ -22,7 +22,7 @@ export default function Home() {
       <Nav />
 
       {/* Hero: minimal text, then the widget takes the stage */}
-      <section className="max-w-[980px] mx-auto px-5 pt-16 pb-6 text-center">
+      <section className="max-w-[980px] mx-auto px-5 pt-16 pb-6 text-center bg-white">
         <h1 className="text-[40px] sm:text-[48px] font-semibold text-gray-900 tracking-tight leading-tight">
           Chat with your AI solutions advisor.
         </h1>
@@ -42,7 +42,7 @@ export default function Home() {
       {/* Answer-first definition block. Kept compact to preserve the clean
           hero, but gives AI engines a clear, quotable "What is Quicklai?"
           statement — a strong signal for definition-style queries. */}
-      <section className="max-w-[680px] mx-auto px-5 py-12 text-center">
+      <section className="max-w-[680px] mx-auto px-5 py-12 text-center bg-white">
         <h2 className="text-[24px] font-semibold text-gray-900 tracking-tight mb-3">
           What is Quicklai?
         </h2>

@@ -2,7 +2,9 @@
 //  Lead capture endpoint → Google Sheets
 //
 //  Leads are forwarded to a Google Apps Script Web App, which appends
-//  a row to your Google Sheet. This approach:
+//  a row to your Google Sheet, emails YOU (the business owner) an
+//  internal notification, and — if the lead gave an email — sends them
+//  a confirmation email too (see google-apps-script.gs). This approach:
 //    - needs no Google service-account keys or npm packages
 //    - works on Vercel (data lives in Google's Sheet, not on disk)
 //    - is easy to set up (see GOOGLE_SHEETS_SETUP.md)

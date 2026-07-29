@@ -41,7 +41,7 @@ export default function AboutHe() {
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(thisPageSchema)} />
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(crumbs)} />
 
-      <article className="max-w-[680px] mx-auto px-5 pt-16 pb-4">
+      <article className="max-w-[680px] mx-auto px-5 pt-16 pb-4 bg-white">
         <h1 className="text-[40px] font-semibold text-gray-900 tracking-tight leading-tight mb-6">
           ייעוץ ברור, בנוי עבור בעלי עסקים.
         </h1>
