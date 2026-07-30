@@ -310,3 +310,43 @@ each lead came from, so you know whether to follow up in Hebrew or English.
   post URLs are in `app/sitemap.js`.
 - **Re-deploy the Apps Script** — it now records a `locale` field per lead
   (new "Language" column); re-paste and re-deploy as with previous updates.
+
+---
+
+## Lead handling automation (email + WhatsApp)
+
+**Phase 1 — email automation: done.** When a lead provides an email, the
+confirmation now varies based on whether they chose "Email" as a preferred
+contact method (see `GOOGLE_SHEETS_SETUP.md` → "Lead confirmation emails"
+for the full behavior). The "first contact" version includes a click-to-chat
+WhatsApp link (`WHATSAPP_NUMBER` in `google-apps-script.gs`) — currently a
+link to your regular WhatsApp Business app, so a human responds manually.
+
+**Phase 2 — WhatsApp Business Platform access: not started.** This is an
+external setup process, not code — you need WhatsApp Business Platform
+(Cloud API) access, which the free WhatsApp Business app does not provide.
+Recommended path: a Business Solution Provider (BSP) rather than integrating
+Meta's raw Cloud API directly — much faster to get live, and handles most of
+the Meta compliance/verification complexity. Compare current pricing/features
+across a couple of providers (e.g. 360dialog, Twilio) before committing.
+
+**Important constraint to know before building Phase 3:** WhatsApp requires
+any business-initiated conversation opener (a message sent before the lead
+has messaged you first) to be a pre-approved message template — you cannot
+send free-form AI-generated text as that first message. Once the lead
+replies, the conversation opens up and free-form AI responses are fine for
+the rest of the exchange. This means the opening "Hello (name), thanks for
+contacting Quicklai..." message has to be submitted to Meta/your BSP and
+approved *before* any Phase 3 code can send it. Also worth confirming
+directly with your BSP: Meta's 2026 policy on AI-driven chatbot automation
+has some conflicting signals across sources — get this confirmed for your
+specific use case before investing in the agent build.
+
+**Phase 3 — the WhatsApp agent itself: not started.** Once Phase 2 access
+exists, this mirrors the architecture of the site's chat: a new webhook
+endpoint receives incoming WhatsApp messages, runs a dedicated system prompt
+("Quicky") through the same Anthropic API pattern for a 5–7 question
+business-mapping flow, replies via the Cloud API, and writes the answers back
+to the correct lead's row in the Sheet — which requires extending the Apps
+Script (or using the Sheets API directly) to *update* an existing row by a
+lookup key (phone number), not just append new ones like it does today.

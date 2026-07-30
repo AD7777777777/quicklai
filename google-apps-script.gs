@@ -9,7 +9,26 @@
 // automatically whenever this is empty, so there's no risk of accidentally
 // emailing a placeholder address, and no fragile string comparison to break
 // if this line gets edited later.
-var NOTIFY_EMAIL = "";
+var NOTIFY_EMAIL = "ayal@quicklai.com";
+
+// >>> SET THIS: Quicklai's WhatsApp Business number, in full international
+// format with NO "+", spaces, or leading zero — e.g. an Israeli mobile
+// 050-123-4567 becomes "972501234567" (972 = country code, drop the 0).
+// Used to build a click-to-chat link (wa.me) included in the first-contact
+// email. Leave empty ("") to omit the WhatsApp link until you set this.
+var WHATSAPP_NUMBER = "972559164550";
+
+// Builds a wa.me click-to-chat link with a pre-filled opening message, so
+// the lead's chat opens with useful context already typed in. Returns ""
+// if WHATSAPP_NUMBER isn't set, so callers can skip the link cleanly.
+function getWhatsAppLink(locale) {
+  if (!WHATSAPP_NUMBER) return "";
+  var lrm = "\u200E";
+  var text = locale === "he"
+    ? "שלום, פניתי דרך האתר של " + lrm + "Quicklai" + lrm
+    : "Hi, I reached out via the Quicklai website";
+  return "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text);
+}
 
 // Handles POST requests from the Quicklai lead API: appends a row AND
 // emails you a notification for every new lead.
@@ -135,6 +154,16 @@ function isValidEmail(email) {
 
 // Sends the LEAD a confirmation email — only if they provided one (email is
 // optional on the form). Content matches the language they used (en/he).
+//
+// Two different messages, depending on whether they actually chose "Email"
+// as a preferred contact method:
+//   - If yes: the "first contact" message — sets expectations that a human
+//     will follow up, and invites them to start business-mapping on
+//     WhatsApp in the meantime (a click-to-chat link, see getWhatsAppLink).
+//   - If no (they just happened to fill in the optional email field while
+//     choosing Call/WhatsApp as their real preference): a lighter, generic
+//     confirmation, without pushing them toward a channel they didn't pick.
+//
 // LRM marks (\u200e) around "Quicklai" and "AI" in the Hebrew version match
 // the same fix used across the website, so these terms don't visually
 // scramble in RTL email clients either.
@@ -147,30 +176,68 @@ function sendLeadConfirmationEmail(data) {
 
   var name = (data.name || "").split(" ")[0]; // first name only, friendlier
   var isHebrew = data.locale === "he";
+  var lrm = "\u200E";
   var methods = data.contactMethods || (isHebrew ? "הדרך שבחרתם" : "your preferred method");
+
+  // Detect whether "Email" (or its Hebrew label) was actually chosen,
+  // checking the label that matches the language the lead used.
+  var methodsStr = String(data.contactMethods || "");
+  var emailWasChosen = isHebrew
+    ? methodsStr.indexOf("אימייל") !== -1
+    : methodsStr.toLowerCase().indexOf("email") !== -1;
+
+  var whatsappLink = getWhatsAppLink(data.locale);
 
   var subject, body;
 
-  if (isHebrew) {
-    var lrm = "\u200E";
-    subject = "תודה שפניתם אל " + lrm + "Quicklai" + lrm;
-    body =
-      "שלום" + (name ? " " + name : "") + ",\n\n" +
-      "תודה שהשארתם פרטים אצל " + lrm + "Quicklai" + lrm + ". נחזור אליכם בקרוב באמצעות " +
-      methods + " כדי לדבר על איך " + lrm + "AI" + lrm + " יכול לעזור לעסק שלכם.\n\n" +
-      "בינתיים, מוזמנים להמשיך לשוחח עם היועץ הדיגיטלי שלנו באתר אם יש לכם עוד שאלות.\n\n" +
-      "בברכה,\n" +
-      "צוות " + lrm + "Quicklai" + lrm;
+  if (emailWasChosen) {
+    // First-contact message: sets expectations + WhatsApp fast-track.
+    if (isHebrew) {
+      subject = "תודה שפניתם אל " + lrm + "Quicklai" + lrm;
+      body =
+        "שלום" + (name ? " " + name : "") + ",\n\n" +
+        "נציג אנושי מ" + lrm + "Quicklai" + lrm + " ייצור איתכם קשר בקרוב.\n\n" +
+        (whatsappLink
+          ? "כדי לחסוך זמן בשיחה, אפשר כבר עכשיו להתחיל לשוחח איתנו בוואטסאפ " +
+            "ולמפות את העסק שלכם: " + whatsappLink + "\n\n"
+          : "") +
+        "בברכה,\n" +
+        "צוות " + lrm + "Quicklai" + lrm;
+    } else {
+      subject = "Thanks for reaching out to Quicklai";
+      body =
+        "Hi" + (name ? " " + name : "") + ",\n\n" +
+        "A human from Quicklai will be in touch soon.\n\n" +
+        (whatsappLink
+          ? "In order to save time during the call, you can start chatting with us " +
+            "on WhatsApp now, mapping your business: " + whatsappLink + "\n\n"
+          : "") +
+        "Best,\n" +
+        "The Quicklai team";
+    }
   } else {
-    subject = "Thanks for reaching out to Quicklai";
-    body =
-      "Hi" + (name ? " " + name : "") + ",\n\n" +
-      "Thanks for leaving your details with Quicklai. We'll get back to you soon via " +
-      methods + " to talk about how AI could help your business.\n\n" +
-      "In the meantime, feel free to keep chatting with our AI advisor on the site if " +
-      "you have more questions.\n\n" +
-      "Best,\n" +
-      "The Quicklai team";
+    // Generic confirmation — they gave an email but didn't pick it as their
+    // preferred contact method, so we don't push WhatsApp on them here.
+    if (isHebrew) {
+      subject = "תודה שפניתם אל " + lrm + "Quicklai" + lrm;
+      body =
+        "שלום" + (name ? " " + name : "") + ",\n\n" +
+        "תודה שהשארתם פרטים אצל " + lrm + "Quicklai" + lrm + ". נחזור אליכם בקרוב באמצעות " +
+        methods + " כדי לדבר על איך " + lrm + "AI" + lrm + " יכול לעזור לעסק שלכם.\n\n" +
+        "בינתיים, מוזמנים להמשיך לשוחח עם היועץ הדיגיטלי שלנו באתר אם יש לכם עוד שאלות.\n\n" +
+        "בברכה,\n" +
+        "צוות " + lrm + "Quicklai" + lrm;
+    } else {
+      subject = "Thanks for reaching out to Quicklai";
+      body =
+        "Hi" + (name ? " " + name : "") + ",\n\n" +
+        "Thanks for leaving your details with Quicklai. We'll get back to you soon via " +
+        methods + " to talk about how AI could help your business.\n\n" +
+        "In the meantime, feel free to keep chatting with our AI advisor on the site if " +
+        "you have more questions.\n\n" +
+        "Best,\n" +
+        "The Quicklai team";
+    }
   }
 
   MailApp.sendEmail(email, subject, body);
@@ -187,20 +254,25 @@ function sendLeadConfirmationEmail(data) {
 // email to TEST_CONFIRMATION_EMAIL, in whichever language TEST_LOCALE is set
 // to — this mirrors real production behavior exactly: one form submission,
 // one confirmation, in the language that visitor actually used.
-var TEST_CONFIRMATION_EMAIL = "test@example.com";
+var TEST_CONFIRMATION_EMAIL = "doayalev@gmail.com";
 var TEST_LOCALE = "en"; // set to "he" to test the Hebrew confirmation instead
+var TEST_EMAIL_CHOSEN = true; // false = test the generic (non-first-contact) version
 
 function runEmailTest() {
   Logger.log("NOTIFY_EMAIL is: " + NOTIFY_EMAIL);
+  Logger.log("WHATSAPP_NUMBER is: " + (WHATSAPP_NUMBER || "(not set — link will be omitted)"));
   Logger.log("TEST_LOCALE is: " + TEST_LOCALE);
+  Logger.log("TEST_EMAIL_CHOSEN is: " + TEST_EMAIL_CHOSEN);
   Logger.log("Remaining daily email quota: " + MailApp.getRemainingDailyQuota());
 
   var isHebrew = TEST_LOCALE === "he";
+  var baseMethods = isHebrew ? "טלפון, וואטסאפ" : "Call, WhatsApp";
+  var emailLabel = isHebrew ? "אימייל" : "Email";
   var fakeLead = {
     name: isHebrew ? "בדיקה" : "Test Lead",
     phone: "0501234567",
     email: TEST_CONFIRMATION_EMAIL,
-    contactMethods: isHebrew ? "טלפון, וואטסאפ" : "Call, WhatsApp",
+    contactMethods: TEST_EMAIL_CHOSEN ? baseMethods + ", " + emailLabel : baseMethods,
     source: "manual test",
     businessContext: "bakery / food retail",
     recommendedTools: "AI agent for after-hours enquiries; automated lead follow-up",

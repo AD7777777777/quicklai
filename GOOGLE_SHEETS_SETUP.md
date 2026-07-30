@@ -21,7 +21,13 @@ about 10 minutes.
 4. **Set your notification email:** near the top of the script, change
    `var NOTIFY_EMAIL = "";` to the address where you want to be
    emailed on every lead. (Leave it as-is to skip email notifications.)
-5. Click the **Save** icon (💾).
+5. **Set your WhatsApp number:** just below that, change
+   `var WHATSAPP_NUMBER = "";` to your WhatsApp Business number in full
+   international format — no `+`, spaces, or leading zero. For example, an
+   Israeli mobile `050-123-4567` becomes `972501234567`. This powers a
+   click-to-chat link included in the "first contact" email (see below).
+   Leave it empty to omit the link until you're ready.
+6. Click the **Save** icon (💾).
 
 ## Step 3 — Deploy it as a Web App
 
@@ -76,11 +82,25 @@ provided one. It's automatic — no extra setup beyond what's above — and the
 language matches the site version they used (English or Hebrew). You (the
 business owner) still get the separate internal notification either way.
 
-To test both emails at once without waiting for a real submission, open the
-Apps Script editor, set `TEST_CONFIRMATION_EMAIL` near the bottom of the
-script to an inbox you can check, then run `runEmailTest` from the function
-dropdown — it sends the internal notification plus one confirmation email, in
-whichever language `TEST_LOCALE` is set to (`"en"` or `"he"`).
+There are two versions of the confirmation, depending on whether the lead
+actually chose "Email" as one of their preferred contact methods:
+
+- **They chose Email** — the "first contact" message: sets expectations that
+  a human from Quicklai will be in touch, and invites them to start
+  business-mapping on WhatsApp in the meantime via a click-to-chat link (see
+  `WHATSAPP_NUMBER` above). This is currently a link to your regular
+  WhatsApp Business app, so you respond manually — an automated WhatsApp
+  agent is a separate, larger project (see the README).
+- **They gave an email but chose Call/WhatsApp instead** — a lighter,
+  generic confirmation, without pushing them toward a channel they didn't
+  actually pick.
+
+To test both variants without waiting for a real submission, open the Apps
+Script editor and adjust the test variables near the bottom of the script:
+`TEST_CONFIRMATION_EMAIL` (an inbox you can check), `TEST_LOCALE` (`"en"` or
+`"he"`), and `TEST_EMAIL_CHOSEN` (`true` for the first-contact version,
+`false` for the generic one) — then run `runEmailTest` from the function
+dropdown. It also sends the internal notification, same as always.
 
 ---
 
