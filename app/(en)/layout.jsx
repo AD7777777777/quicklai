@@ -67,7 +67,7 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      <body className="font-sans relative">
+      <body className="font-sans">
         <BackgroundLine />
         {children}
       </body>

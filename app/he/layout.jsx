@@ -73,7 +73,7 @@ export default function HebrewRootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      <body className="font-sans relative">
+      <body className="font-sans">
         <BackgroundLine locale="he" />
         {children}
       </body>

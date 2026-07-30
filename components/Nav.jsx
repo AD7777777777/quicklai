@@ -20,7 +20,7 @@ export default function Nav({ locale = "en" }) {
   ];
 
   return (
-    <nav className="w-full bg-white border-b border-gray-100">
+    <nav className="sticky top-0 z-20 w-full bg-white border-b border-gray-100">
       <div className="max-w-[980px] mx-auto px-5 h-12 flex items-center justify-between">
         <Link
           href={prefix || "/"}

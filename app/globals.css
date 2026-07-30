@@ -5,6 +5,12 @@
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Reserves scrollbar space permanently, whether or not the page actually
+     needs to scroll. Without this, centered content (mx-auto) visibly
+     shifts a few pixels sideways the moment a page grows tall enough to
+     need a scrollbar — exactly what happens as a chat conversation grows
+     and the page crosses the point of needing one. */
+  scrollbar-gutter: stable;
 }
 
 body {

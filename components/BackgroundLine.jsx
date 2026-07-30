@@ -1,14 +1,11 @@
-// A single thin diagonal accent line, positioned at the top of the page and
-// scrolling away naturally with the page content (not pinned to the
-// viewport). The container is a generous fixed height (well beyond one
-// screen) so the line stays visible behind content that starts lower down
-// on pages with more copy above it — like a blog list or an About page's
-// prose — not just on the homepage where the hero fits in one screen.
+// A single thin diagonal accent line, fixed to the viewport — stays in
+// place while the page scrolls, rather than moving with the content.
 //
-// The y1/y2 values are percentages of that 1600px-tall container, not of
-// the viewport — so they're deliberately much smaller than they'd be for a
-// one-screen-tall container. If you change the container height, these
-// need to scale with it: y% = (target pixel position / container height) * 100.
+// Uses `fixed inset-0` (all four edges pinned to 0) rather than separate
+// width/height classes — this is the most robust way to guarantee the SVG
+// covers the full viewport edge-to-edge with no risk of clipping on narrow
+// (mobile) screens, since it doesn't depend on resolving a percentage width
+// against a containing block that could be ambiguous in some layouts.
 //
 // Purely decorative — pointer-events are disabled so it never blocks
 // clicks, and it renders behind everything (-z-10), which is what lets it
@@ -22,15 +19,15 @@ export default function BackgroundLine({ locale = "en" }) {
   return (
     <svg
       aria-hidden="true"
-      className="absolute top-0 left-0 w-full h-[1600px] pointer-events-none -z-10"
+      className="fixed inset-0 pointer-events-none -z-10"
       viewBox="0 0 100 100"
       preserveAspectRatio="none"
     >
       <line
         x1={mirror ? "0" : "100"}
-        y1="18"
+        y1="15"
         x2={mirror ? "100" : "0"}
-        y2="43"
+        y2="62"
         stroke="#F59E0B"
         strokeWidth="2"
         vectorEffect="non-scaling-stroke"
