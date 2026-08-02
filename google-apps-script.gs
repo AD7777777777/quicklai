@@ -18,6 +18,15 @@ var NOTIFY_EMAIL = "ayal@quicklai.com";
 // email. Leave empty ("") to omit the WhatsApp link until you set this.
 var WHATSAPP_NUMBER = "972559164550";
 
+// >>> SET THIS: the Web App URL of the SEPARATE confirmation-email script
+// (google-apps-script-confirmation.gs), deployed under a personal Gmail
+// account. This script delegates the lead's confirmation email to that one
+// instead of sending it itself — quicklai.com's outbound email
+// authentication has been unreliable, while Gmail's own sending is trusted
+// automatically. Leave empty ("") to skip confirmation emails entirely
+// (the Sheet row and your own internal notification still work either way).
+var CONFIRMATION_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwX0TVTyieS2uIPlsGQo71C8laxNV80cNVcT-QOlkC0vR4enxmPvOybXQeyaNhj1hJk/exec";
+
 // Builds a wa.me click-to-chat link with a pre-filled opening message, so
 // the lead's chat opens with useful context already typed in. Returns ""
 // if WHATSAPP_NUMBER isn't set, so callers can skip the link cleanly.
@@ -89,13 +98,14 @@ function doPost(e) {
       console.error("Lead email failed:", mailErr);
     }
 
-    // Send the lead a confirmation email — only if they gave one. Also
-    // wrapped in its own try/catch so it can never block the lead being
-    // saved or the internal notification above.
+    // Delegate the lead's confirmation email to the separate Gmail-based
+    // script (see CONFIRMATION_WEBHOOK_URL above). Wrapped in its own
+    // try/catch so it can never block the lead being saved or the internal
+    // notification above.
     try {
-      sendLeadConfirmationEmail(data);
+      sendConfirmationViaGmailScript(data);
     } catch (confirmErr) {
-      console.error("Lead confirmation email failed:", confirmErr);
+      console.error("Lead confirmation delegation failed:", confirmErr);
     }
 
     return ContentService.createTextOutput(
@@ -146,102 +156,25 @@ function sendLeadEmail(data) {
   MailApp.sendEmail(NOTIFY_EMAIL, subject, body);
 }
 
-// Basic sanity check — good enough to avoid sending to obvious garbage
-// without being so strict it rejects real, unusual-but-valid addresses.
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
+// Computes the WhatsApp click-to-chat link, then hands the lead's data off
+// to the separate Gmail-based confirmation script — that script (not this
+// one) actually sends the confirmation email. See CONFIRMATION_WEBHOOK_URL
+// above for why this is a separate script.
+function sendConfirmationViaGmailScript(data) {
+  if (!CONFIRMATION_WEBHOOK_URL) {
+    return; // not configured yet — skip quietly, matches other optional features.
+  }
+  var payload = Object.assign({}, data, {
+    whatsappLink: getWhatsAppLink(data.locale),
+  });
+  UrlFetchApp.fetch(CONFIRMATION_WEBHOOK_URL, {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true, // read the response ourselves rather than throw
+  });
 }
 
-// Sends the LEAD a confirmation email — only if they provided one (email is
-// optional on the form). Content matches the language they used (en/he).
-//
-// Two different messages, depending on whether they actually chose "Email"
-// as a preferred contact method:
-//   - If yes: the "first contact" message — sets expectations that a human
-//     will follow up, and invites them to start business-mapping on
-//     WhatsApp in the meantime (a click-to-chat link, see getWhatsAppLink).
-//   - If no (they just happened to fill in the optional email field while
-//     choosing Call/WhatsApp as their real preference): a lighter, generic
-//     confirmation, without pushing them toward a channel they didn't pick.
-//
-// LRM marks (\u200e) around "Quicklai" and "AI" in the Hebrew version match
-// the same fix used across the website, so these terms don't visually
-// scramble in RTL email clients either.
-function sendLeadConfirmationEmail(data) {
-  data = data || {};
-  var email = data.email;
-  if (!email || !isValidEmail(email)) {
-    return; // no email given, or it doesn't look valid — skip quietly.
-  }
-
-  var name = (data.name || "").split(" ")[0]; // first name only, friendlier
-  var isHebrew = data.locale === "he";
-  var lrm = "\u200E";
-  var methods = data.contactMethods || (isHebrew ? "הדרך שבחרתם" : "your preferred method");
-
-  // Detect whether "Email" (or its Hebrew label) was actually chosen,
-  // checking the label that matches the language the lead used.
-  var methodsStr = String(data.contactMethods || "");
-  var emailWasChosen = isHebrew
-    ? methodsStr.indexOf("אימייל") !== -1
-    : methodsStr.toLowerCase().indexOf("email") !== -1;
-
-  var whatsappLink = getWhatsAppLink(data.locale);
-
-  var subject, body;
-
-  if (emailWasChosen) {
-    // First-contact message: sets expectations + WhatsApp fast-track.
-    if (isHebrew) {
-      subject = "תודה שפניתם אל " + lrm + "Quicklai" + lrm;
-      body =
-        "שלום" + (name ? " " + name : "") + ",\n\n" +
-        "נציג אנושי מ" + lrm + "Quicklai" + lrm + " ייצור איתכם קשר בקרוב.\n\n" +
-        (whatsappLink
-          ? "כדי לחסוך זמן בשיחה, אפשר כבר עכשיו להתחיל לשוחח איתנו בוואטסאפ " +
-            "ולמפות את העסק שלכם: " + whatsappLink + "\n\n"
-          : "") +
-        "בברכה,\n" +
-        "צוות " + lrm + "Quicklai" + lrm;
-    } else {
-      subject = "Thanks for reaching out to Quicklai";
-      body =
-        "Hi" + (name ? " " + name : "") + ",\n\n" +
-        "A human from Quicklai will be in touch soon.\n\n" +
-        (whatsappLink
-          ? "In order to save time during the call, you can start chatting with us " +
-            "on WhatsApp now, mapping your business: " + whatsappLink + "\n\n"
-          : "") +
-        "Best,\n" +
-        "The Quicklai team";
-    }
-  } else {
-    // Generic confirmation — they gave an email but didn't pick it as their
-    // preferred contact method, so we don't push WhatsApp on them here.
-    if (isHebrew) {
-      subject = "תודה שפניתם אל " + lrm + "Quicklai" + lrm;
-      body =
-        "שלום" + (name ? " " + name : "") + ",\n\n" +
-        "תודה שהשארתם פרטים אצל " + lrm + "Quicklai" + lrm + ". נחזור אליכם בקרוב באמצעות " +
-        methods + " כדי לדבר על איך " + lrm + "AI" + lrm + " יכול לעזור לעסק שלכם.\n\n" +
-        "בינתיים, מוזמנים להמשיך לשוחח עם היועץ הדיגיטלי שלנו באתר אם יש לכם עוד שאלות.\n\n" +
-        "בברכה,\n" +
-        "צוות " + lrm + "Quicklai" + lrm;
-    } else {
-      subject = "Thanks for reaching out to Quicklai";
-      body =
-        "Hi" + (name ? " " + name : "") + ",\n\n" +
-        "Thanks for leaving your details with Quicklai. We'll get back to you soon via " +
-        methods + " to talk about how AI could help your business.\n\n" +
-        "In the meantime, feel free to keep chatting with our AI advisor on the site if " +
-        "you have more questions.\n\n" +
-        "Best,\n" +
-        "The Quicklai team";
-    }
-  }
-
-  MailApp.sendEmail(email, subject, body);
-}
 
 // ------------------------------------------------------------------
 //  TEST HELPERS — run these manually from the Apps Script editor to
@@ -264,6 +197,12 @@ function runEmailTest() {
   Logger.log("TEST_LOCALE is: " + TEST_LOCALE);
   Logger.log("TEST_EMAIL_CHOSEN is: " + TEST_EMAIL_CHOSEN);
   Logger.log("Remaining daily email quota: " + MailApp.getRemainingDailyQuota());
+  if (TEST_CONFIRMATION_EMAIL === "test@example.com") {
+    Logger.log("WARNING: TEST_CONFIRMATION_EMAIL is still the default placeholder — " +
+      "example.com isn't a real inbox, so the confirmation delegation below may " +
+      "report success without anything actually arriving anywhere. Change it to a " +
+      "real address you can check.");
+  }
 
   var isHebrew = TEST_LOCALE === "he";
   var baseMethods = isHebrew ? "טלפון, וואטסאפ" : "Call, WhatsApp";
@@ -294,10 +233,25 @@ function runEmailTest() {
   }
 
   try {
-    sendLeadConfirmationEmail(fakeLead);
-    Logger.log("sendLeadConfirmationEmail (" + TEST_LOCALE + "): sent OK to " + TEST_CONFIRMATION_EMAIL);
+    if (!CONFIRMATION_WEBHOOK_URL) {
+      Logger.log("CONFIRMATION_WEBHOOK_URL not set — skipping confirmation delegation test. " +
+        "Set it up per GOOGLE_SHEETS_SETUP.md, or run runConfirmationEmailTest() directly " +
+        "in the OTHER script (google-apps-script-confirmation.gs) to test that part alone.");
+    } else {
+      var payload = Object.assign({}, fakeLead, {
+        whatsappLink: getWhatsAppLink(fakeLead.locale),
+      });
+      var response = UrlFetchApp.fetch(CONFIRMATION_WEBHOOK_URL, {
+        method: "post",
+        contentType: "application/json",
+        payload: JSON.stringify(payload),
+        muteHttpExceptions: true,
+      });
+      Logger.log("Confirmation delegation response (" + response.getResponseCode() + "): " +
+        response.getContentText());
+    }
   } catch (err) {
-    Logger.log("sendLeadConfirmationEmail (" + TEST_LOCALE + ") FAILED: " + err);
+    Logger.log("Confirmation delegation FAILED: " + err);
   }
 
   Logger.log("runEmailTest finished — check NOTIFY_EMAIL and " + TEST_CONFIRMATION_EMAIL + " (and spam folders).");

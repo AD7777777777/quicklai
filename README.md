@@ -317,10 +317,24 @@ each lead came from, so you know whether to follow up in Hebrew or English.
 
 **Phase 1 — email automation: done.** When a lead provides an email, the
 confirmation now varies based on whether they chose "Email" as a preferred
-contact method (see `GOOGLE_SHEETS_SETUP.md` → "Lead confirmation emails"
-for the full behavior). The "first contact" version includes a click-to-chat
-WhatsApp link (`WHATSAPP_NUMBER` in `google-apps-script.gs`) — currently a
-link to your regular WhatsApp Business app, so a human responds manually.
+contact method (see `GOOGLE_SHEETS_SETUP.md` → "Confirmation emails via
+Gmail" for the full behavior). The "first contact" version includes a
+click-to-chat WhatsApp link (`WHATSAPP_NUMBER` in `google-apps-script.gs`) —
+currently a link to your regular WhatsApp Business app, so a human responds
+manually.
+
+**Confirmation emails send from a separate script, on a personal Gmail
+account.** `quicklai.com`'s outbound email authentication (SPF/DKIM/DMARC)
+was unreliable — mail reported as sent but never arrived externally. Rather
+than keep chasing that, the lead's confirmation email now sends from
+`google-apps-script-confirmation.gs`, a second, independent Apps Script
+deployed under a personal Gmail account, which the main script delegates to
+over HTTP for every lead. Gmail's own sending is trusted automatically, no
+DNS work required. Recipients still see "Quicklai" as the sender's display
+name (`SENDER_NAME` in that script) — only the underlying address is the
+Gmail one. Your own internal notification (`NOTIFY_EMAIL`) stays on the
+Workspace account as before, since that one already delivers reliably
+(same-domain mail). Full setup steps are in `GOOGLE_SHEETS_SETUP.md`.
 
 **Phase 2 — WhatsApp Business Platform access: not started.** This is an
 external setup process, not code — you need WhatsApp Business Platform
