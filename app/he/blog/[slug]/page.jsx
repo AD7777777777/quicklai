@@ -33,6 +33,20 @@ export function generateMetadata({ params }) {
       modifiedTime: modified,
       url: `${SITE.url}/he/blog/${params.slug}`,
       locale: "he_IL",
+      images: [
+        {
+          url: `${SITE.url}/og-he.png`,
+          width: 1200,
+          height: 630,
+          alt: SITE.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: [`${SITE.url}/og-he.png`],
     },
   };
 }

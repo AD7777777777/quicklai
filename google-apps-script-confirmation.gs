@@ -142,10 +142,10 @@ function sendLeadConfirmationEmail(data) {
 //  TEST HELPER — run manually from the Apps Script editor. Safe to leave
 //  in; it's never called by doPost.
 // ------------------------------------------------------------------
-var TEST_CONFIRMATION_EMAIL = "doayalev@gmail.com";
+var TEST_CONFIRMATION_EMAIL = "test@example.com";
 var TEST_LOCALE = "en"; // set to "he" to test the Hebrew version
 var TEST_EMAIL_CHOSEN = true; // false = test the generic (non-first-contact) version
-var TEST_WHATSAPP_LINK = "https://wa.me/972559164550"; // paste a real link to check it renders
+var TEST_WHATSAPP_LINK = "https://wa.me/972501234567"; // paste a real link to check it renders
 
 function runConfirmationEmailTest() {
   Logger.log("Remaining daily email quota: " + MailApp.getRemainingDailyQuota());

@@ -15,10 +15,36 @@ export const metadata = {
     url: SITE.url,
     siteName: SITE.name,
     type: "website",
+    images: [
+      {
+        url: `${SITE.url}/og-en.png`,
+        width: 1200,
+        height: 630,
+        alt: `${SITE.name} — ${SITE.tagline}`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE.name} — ${SITE.tagline}`,
+    description: SITE.description,
+    images: [`${SITE.url}/og-en.png`],
   },
   robots: {
     index: true,
     follow: true,
+  },
+  // Explicit backup for the automatic favicon.ico/icon.png/apple-icon.png
+  // file-convention detection — this project uses two independent root
+  // layouts (multiple-root-layouts pattern) rather than one shared root,
+  // which is a less common setup, so this makes the icons resolve
+  // correctly regardless of any edge case there.
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: "/apple-icon.png",
   },
 };
 

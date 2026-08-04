@@ -9,14 +9,14 @@
 // automatically whenever this is empty, so there's no risk of accidentally
 // emailing a placeholder address, and no fragile string comparison to break
 // if this line gets edited later.
-var NOTIFY_EMAIL = "ayal@quicklai.com";
+var NOTIFY_EMAIL = "";
 
 // >>> SET THIS: Quicklai's WhatsApp Business number, in full international
 // format with NO "+", spaces, or leading zero — e.g. an Israeli mobile
 // 050-123-4567 becomes "972501234567" (972 = country code, drop the 0).
 // Used to build a click-to-chat link (wa.me) included in the first-contact
 // email. Leave empty ("") to omit the WhatsApp link until you set this.
-var WHATSAPP_NUMBER = "972559164550";
+var WHATSAPP_NUMBER = "";
 
 // >>> SET THIS: the Web App URL of the SEPARATE confirmation-email script
 // (google-apps-script-confirmation.gs), deployed under a personal Gmail
@@ -25,7 +25,7 @@ var WHATSAPP_NUMBER = "972559164550";
 // authentication has been unreliable, while Gmail's own sending is trusted
 // automatically. Leave empty ("") to skip confirmation emails entirely
 // (the Sheet row and your own internal notification still work either way).
-var CONFIRMATION_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwX0TVTyieS2uIPlsGQo71C8laxNV80cNVcT-QOlkC0vR4enxmPvOybXQeyaNhj1hJk/exec";
+var CONFIRMATION_WEBHOOK_URL = "";
 
 // Builds a wa.me click-to-chat link with a pre-filled opening message, so
 // the lead's chat opens with useful context already typed in. Returns ""
@@ -187,7 +187,7 @@ function sendConfirmationViaGmailScript(data) {
 // email to TEST_CONFIRMATION_EMAIL, in whichever language TEST_LOCALE is set
 // to — this mirrors real production behavior exactly: one form submission,
 // one confirmation, in the language that visitor actually used.
-var TEST_CONFIRMATION_EMAIL = "doayalev@gmail.com";
+var TEST_CONFIRMATION_EMAIL = "test@example.com";
 var TEST_LOCALE = "en"; // set to "he" to test the Hebrew confirmation instead
 var TEST_EMAIL_CHOSEN = true; // false = test the generic (non-first-contact) version
 
