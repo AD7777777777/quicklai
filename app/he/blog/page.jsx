@@ -6,15 +6,17 @@ import FAQ from "@/components/FAQ";
 import BookCallButton from "@/components/BookCallButton";
 import { BLOG_POSTS_HE } from "@/lib/content/he-blog-meta";
 import { pageSchema, breadcrumbSchema, jsonLd } from "@/lib/schema";
+import { rtlMeta } from "@/lib/content/he";
 
 export const metadata = {
   alternates: {
     canonical: "/he/blog",
     languages: { en: "/blog", he: "/he/blog", "x-default": "/blog" },
   },
-  title: "בלוג",
-  description:
-    "מדריכים מעשיים על שימוש ב‎AI‎ לניהול ולשיווק עסק קטן — שירות לקוחות, מעקב אחרי לידים, שיווק, אוטומציה וצמיחה.",
+  title: rtlMeta("בלוג"),
+  description: rtlMeta(
+    "מדריכים מעשיים על שימוש ב‎AI‎ לניהול ולשיווק עסק קטן — שירות לקוחות, מעקב אחרי לידים, שיווק, אוטומציה וצמיחה."
+  ),
 };
 
 const blogFaqsHe = [

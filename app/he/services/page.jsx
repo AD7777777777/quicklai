@@ -3,15 +3,17 @@ import Footer from "@/components/Footer";
 import FAQ from "@/components/FAQ";
 import BookCallButton from "@/components/BookCallButton";
 import { pageSchema, breadcrumbSchema, serviceListSchema, jsonLd } from "@/lib/schema";
+import { rtlMeta } from "@/lib/content/he";
 
 export const metadata = {
   alternates: {
     canonical: "/he/services",
     languages: { en: "/services", he: "/he/services", "x-default": "/services" },
   },
-  title: "שירותים",
-  description:
-    "‎Quicklai‎ מציעה ייעוץ ‎AI‎ מיידי לבעלי עסקים קטנים ובינוניים — יחד עם פתרונות ‎AI‎ מותאמים אישית, סוכני ‎AI‎ וכלי אוטומציה לניהול ולשיווק. השאירו פרטים ואנחנו נחזור אליכם.",
+  title: rtlMeta("שירותים"),
+  description: rtlMeta(
+    "‎Quicklai‎ מציעה ייעוץ ‎AI‎ מיידי לבעלי עסקים קטנים ובינוניים — יחד עם פתרונות ‎AI‎ מותאמים אישית, סוכני ‎AI‎ וכלי אוטומציה לניהול ולשיווק. השאירו פרטים ואנחנו נחזור אליכם."
+  ),
 };
 
 const services = [

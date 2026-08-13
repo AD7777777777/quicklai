@@ -4,7 +4,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import BookCallButton from "@/components/BookCallButton";
 import { POST_CONTENT_HE } from "@/lib/content/he-posts";
-import { SITE } from "@/lib/content/he";
+import { SITE, rtlMeta } from "@/lib/content/he";
 
 export function generateStaticParams() {
   return Object.keys(POST_CONTENT_HE).map((slug) => ({ slug }));
@@ -15,8 +15,8 @@ export function generateMetadata({ params }) {
   if (!post) return {};
   const modified = post.updated || post.date;
   return {
-    title: post.title,
-    description: post.description,
+    title: rtlMeta(post.title),
+    description: rtlMeta(post.description),
     alternates: {
       canonical: `${SITE.url}/he/blog/${params.slug}`,
       languages: {
@@ -26,8 +26,8 @@ export function generateMetadata({ params }) {
       },
     },
     openGraph: {
-      title: post.title,
-      description: post.description,
+      title: rtlMeta(post.title),
+      description: rtlMeta(post.description),
       type: "article",
       publishedTime: post.date,
       modifiedTime: modified,
@@ -44,8 +44,8 @@ export function generateMetadata({ params }) {
     },
     twitter: {
       card: "summary_large_image",
-      title: post.title,
-      description: post.description,
+      title: rtlMeta(post.title),
+      description: rtlMeta(post.description),
       images: [`${SITE.url}/og-he.png`],
     },
   };

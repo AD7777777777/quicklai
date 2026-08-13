@@ -2,15 +2,17 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import InlineLeadForm from "@/components/InlineLeadForm";
 import { pageSchema, breadcrumbSchema, jsonLd } from "@/lib/schema";
+import { rtlMeta } from "@/lib/content/he";
 
 export const metadata = {
   alternates: {
     canonical: "/he/contact",
     languages: { en: "/contact", he: "/he/contact", "x-default": "/contact" },
   },
-  title: "צור קשר",
-  description:
-    "צרו קשר עם ‎Quicklai‎ — השאירו פרטים ואנחנו נחזור אליכם בנוגע לפתרונות ‎AI‎ לעסק הקטן או הבינוני שלכם.",
+  title: rtlMeta("צור קשר"),
+  description: rtlMeta(
+    "צרו קשר עם ‎Quicklai‎ — השאירו פרטים ואנחנו נחזור אליכם בנוגע לפתרונות ‎AI‎ לעסק הקטן או הבינוני שלכם."
+  ),
 };
 
 const thisPageSchema = pageSchema({

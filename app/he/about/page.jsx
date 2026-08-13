@@ -3,15 +3,17 @@ import Footer from "@/components/Footer";
 import FAQ from "@/components/FAQ";
 import BookCallButton from "@/components/BookCallButton";
 import { pageSchema, breadcrumbSchema, jsonLd } from "@/lib/schema";
+import { rtlMeta } from "@/lib/content/he";
 
 export const metadata = {
   alternates: {
     canonical: "/he/about",
     languages: { en: "/about", he: "/he/about", "x-default": "/about" },
   },
-  title: "אודות",
-  description:
-    "‎Quicklai‎ עוזרת לבעלי עסקים קטנים ובינוניים לקבל הכוונה ברורה ומהירה — והופכת את הבהירות הזו לפעולה עם כלי ‎AI‎ שאנחנו בונים עבורם.",
+  title: rtlMeta("אודות"),
+  description: rtlMeta(
+    "‎Quicklai‎ עוזרת לבעלי עסקים קטנים ובינוניים לקבל הכוונה ברורה ומהירה — והופכת את הבהירות הזו לפעולה עם כלי ‎AI‎ שאנחנו בונים עבורם."
+  ),
 };
 
 const aboutFaqs = [

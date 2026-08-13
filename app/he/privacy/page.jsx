@@ -1,15 +1,17 @@
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { pageSchema, breadcrumbSchema, jsonLd } from "@/lib/schema";
+import { rtlMeta } from "@/lib/content/he";
 
 export const metadata = {
   alternates: {
     canonical: "/he/privacy",
     languages: { en: "/privacy", he: "/he/privacy", "x-default": "/privacy" },
   },
-  title: "מדיניות פרטיות",
-  description:
-    "איך ‎Quicklai‎ אוספת, משתמשת, שומרת ומגנה על המידע שאתם משתפים — כולל הפרטים שאתם מספקים כדי שנוכל לחזור אליכם.",
+  title: rtlMeta("מדיניות פרטיות"),
+  description: rtlMeta(
+    "איך ‎Quicklai‎ אוספת, משתמשת, שומרת ומגנה על המידע שאתם משתפים — כולל הפרטים שאתם מספקים כדי שנוכל לחזור אליכם."
+  ),
 };
 
 // NOTE: This is a clear, honest starting policy written in plain language.
