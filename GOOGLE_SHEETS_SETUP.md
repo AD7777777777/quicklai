@@ -157,6 +157,16 @@ deployed for the very first time.
 - **No row appears:** confirm the env var is set and the deployment access is
   "Anyone". Check the Apps Script **Executions** log for errors.
 - **Rows appear but empty:** make sure you pasted the whole script and saved.
+- **Timestamps look wrong:** the script now converts to Israel local time
+  (`Asia/Jerusalem`, handling the seasonal DST shift automatically) before
+  writing to the Sheet or including it in the notification email — if
+  you're still seeing UTC-looking timestamps, confirm you re-deployed after
+  updating the script. Note: if your Sheet already has rows in it, the
+  header cell still says the old label ("Timestamp") — new headers are only
+  written automatically to a brand-new, empty sheet. Rename that header
+  cell to "Timestamp (Israel)" by hand if you want it to match; existing
+  rows' timestamp *values* were already in whatever format they were
+  written in and won't retroactively change.
 - **Works locally, not on Vercel:** the env var must be added in Vercel too, and
   you must redeploy after adding it.
 - **No lead emails arriving (internal notification):** confirm you set

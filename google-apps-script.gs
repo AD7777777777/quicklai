@@ -27,6 +27,17 @@ var WHATSAPP_NUMBER = "";
 // (the Sheet row and your own internal notification still work either way).
 var CONFIRMATION_WEBHOOK_URL = "";
 
+// Timestamps arrive as UTC (JavaScript's toISOString() always outputs UTC,
+// regardless of where the server actually runs — Vercel's servers run in
+// UTC, not Israel time). This converts to Israel local time — correctly
+// handling the seasonal DST shift ("שעון קיץ") automatically — before
+// anything gets written to the Sheet or shown in an email, so what you see
+// actually matches your local clock instead of being 2-3 hours off.
+function formatIsraelTime(isoStringOrDate) {
+  var date = isoStringOrDate ? new Date(isoStringOrDate) : new Date();
+  return Utilities.formatDate(date, "Asia/Jerusalem", "yyyy-MM-dd HH:mm:ss");
+}
+
 // Builds a wa.me click-to-chat link with a pre-filled opening message, so
 // the lead's chat opens with useful context already typed in. Returns ""
 // if WHATSAPP_NUMBER isn't set, so callers can skip the link cleanly.
@@ -52,7 +63,7 @@ function doPost(e) {
     // Create a header row once, if the sheet is empty.
     if (sheet.getLastRow() === 0) {
       sheet.appendRow([
-        "Timestamp",
+        "Timestamp (Israel)",
         "Name",
         "Phone",
         "Email",
@@ -74,7 +85,7 @@ function doPost(e) {
     var phoneValue = data.phone ? "'" + String(data.phone) : "";
 
     sheet.appendRow([
-      data.createdAt || new Date().toISOString(),
+      formatIsraelTime(data.createdAt),
       data.name || "",
       phoneValue,
       data.email || "",
@@ -135,7 +146,7 @@ function sendLeadEmail(data) {
   var source = data.source || "unknown";
   var field = data.businessContext || "(not specified)";
   var tools = data.recommendedTools || "(none noted)";
-  var when = data.createdAt || new Date().toISOString();
+  var when = formatIsraelTime(data.createdAt);
 
   var subject = "New Quicklai lead: " + name;
 
@@ -148,7 +159,7 @@ function sendLeadEmail(data) {
     "Business field:  " + field + "\n" +
     "AI tools discussed: " + tools + "\n" +
     "Source:          " + source + "\n" +
-    "Time:            " + when + "\n\n" +
+    "Time (Israel):   " + when + "\n\n" +
     "Privacy consent: " + (data.consent ? "Yes" : "No") + "\n" +
     "Partner sharing: " + (data.marketingOptIn ? "Yes" : "No") + "\n\n" +
     "The full record has been added to your Google Sheet.";
