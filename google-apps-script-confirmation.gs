@@ -134,7 +134,11 @@ function sendLeadConfirmationEmail(data) {
     }
   }
 
-  MailApp.sendEmail(email, subject, body, { name: SENDER_NAME });
+  // Using GmailApp instead of MailApp — see google-apps-script.gs for why.
+  // Requires the gmail.send permission scope — run a function directly in
+  // this script's editor once to trigger the fresh consent prompt if you
+  // haven't authorized this yet.
+  GmailApp.sendEmail(email, subject, body, { name: SENDER_NAME });
   return { sent: true, to: email, subject: subject };
 }
 
@@ -142,10 +146,10 @@ function sendLeadConfirmationEmail(data) {
 //  TEST HELPER — run manually from the Apps Script editor. Safe to leave
 //  in; it's never called by doPost.
 // ------------------------------------------------------------------
-var TEST_CONFIRMATION_EMAIL = "test@example.com";
+var TEST_CONFIRMATION_EMAIL = "ayal@quicklai.com";
 var TEST_LOCALE = "en"; // set to "he" to test the Hebrew version
 var TEST_EMAIL_CHOSEN = true; // false = test the generic (non-first-contact) version
-var TEST_WHATSAPP_LINK = "https://wa.me/972501234567"; // paste a real link to check it renders
+var TEST_WHATSAPP_LINK = "https://wa.me/972559164550"; // paste a real link to check it renders
 
 function runConfirmationEmailTest() {
   Logger.log("Remaining daily email quota: " + MailApp.getRemainingDailyQuota());
