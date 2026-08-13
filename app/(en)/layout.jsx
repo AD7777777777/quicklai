@@ -1,6 +1,7 @@
 import "../globals.css";
 import { SITE } from "@/lib/config";
 import BackgroundLine from "@/components/BackgroundLine";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata = {
   metadataBase: new URL(SITE.url),
@@ -96,20 +97,9 @@ export default function RootLayout({ children }) {
       <body className="font-sans">
         <BackgroundLine />
         {children}
+	<SpeedInsights />
       </body>
     </html>
   );
 }
 
-import { SpeedInsights } from "@vercel/speed-insights/next";
-
-export default function RootLayout({ children }) {
-  return (
-    <html>
-      <body>
-        {children}
-        <SpeedInsights />
-      </body>
-    </html>
-  );
-}
